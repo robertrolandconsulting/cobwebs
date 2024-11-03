@@ -4,7 +4,7 @@ all: listbooks
 
 listbooks: listbooks.cbl
 	esqlOC listbooks.cbl
-	cobc -x listbooks.cob -locsql
+	cobc -Wall -O -x listbooks.cob -locsql
 
 run: listbooks
 	export COB_PRE_LOAD=/usr/local/lib/libocsql.so ; ./listbooks

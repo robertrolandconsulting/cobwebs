@@ -7,24 +7,22 @@
       * Copyright (c) 2024 Robert Roland
       ********************************************
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. LISTBOOKS.
-       AUTHOR.     RROLAND.
-       DATE-WRITTEN. 2024-11-02.
+       PROGRAM-ID.   LISTBOOKS.
 
        DATA DIVISION.
-       
+
        WORKING-STORAGE SECTION.
        01  D-BOOK-REC.
            05  D-BOOK-ID           PIC X(36).
            05  D-BOOK-NAME         PIC X(50).
            05  D-BOOK-AUTHOR       PIC X(50).
            05  D-BOOK-YEAR         PIC 9(4).
-       
+
        EXEC SQL
            BEGIN DECLARE SECTION
        END-EXEC.
        01  HOSTVARS.
-           05 BUFFER               PIC X(1024).          
+           05 BUFFER               PIC X(1024).
 
        01  BOOK-REC-VARS.
            05  BOOK-ID             PIC X(36).
@@ -79,7 +77,7 @@
       *    FETCH FROM THE CURSOR
            DISPLAY "------------".
            EXEC SQL
-               FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR, 
+               FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR,
                              :BOOK-YEAR
            END-EXEC.
            PERFORM UNTIL SQLCODE NOT = ZERO
@@ -89,7 +87,7 @@
                MOVE BOOK-YEAR TO D-BOOK-YEAR
                DISPLAY D-BOOK-REC
                EXEC SQL
-                   FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR, 
+                   FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR,
                                  :BOOK-YEAR
                END-EXEC
            END-PERFORM.
@@ -138,4 +136,3 @@
            END-EVALUATE.
 
        END-PROGRAM.
-       
