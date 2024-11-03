@@ -17,6 +17,8 @@
            05  D-BOOK-NAME         PIC X(50).
            05  D-BOOK-AUTHOR       PIC X(50).
            05  D-BOOK-YEAR         PIC 9(4).
+           05  D-BOOK-ISBN10       PIC X(10).
+           05  D-BOOK-SYNOPSIS     PIC X(1024).
 
        EXEC SQL
            BEGIN DECLARE SECTION
@@ -29,6 +31,9 @@
            05  BOOK-NAME           PIC X(50).
            05  BOOK-AUTHOR         PIC X(50).
            05  BOOK-YEAR           PIC 9(4).
+           05  BOOK-ISBN10         PIC X(10).
+           05  BOOK-SYNOPSIS       PIC X(1024).
+
        01  BOOK-CNT                PIC 9(8).
        EXEC SQL
            END DECLARE SECTION
@@ -49,7 +54,7 @@
                   'PORT=5432;'
                   'DATABASE=books;'
                   'UID=books;'
-                  *> 'PWD=;'
+                  'PWD=b00ks!;'
            INTO BUFFER.
 
            EXEC SQL
@@ -66,9 +71,10 @@
       *    DECLARE CURSOR
            EXEC SQL
                DECLARE C1 CURSOR FOR
-               SELECT BOOK-ID, BOOK-NAME, BOOK-AUTHOR, BOOK-YEAR
+               SELECT id, name, author, year,
+                      isbn10, synopsis
                       FROM BOOKS
-                      ORDER BY BOOK-ID
+                      ORDER BY id
            END-EXEC.
            EXEC SQL
                OPEN C1
@@ -78,17 +84,20 @@
            DISPLAY "------------".
            EXEC SQL
                FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR,
-                             :BOOK-YEAR
+                             :BOOK-YEAR, :BOOK-ISBN10, :BOOK-SYNOPSIS
            END-EXEC.
            PERFORM UNTIL SQLCODE NOT = ZERO
                MOVE BOOK-ID TO D-BOOK-ID
                MOVE BOOK-NAME TO D-BOOK-NAME
                MOVE BOOK-AUTHOR TO D-BOOK-AUTHOR
                MOVE BOOK-YEAR TO D-BOOK-YEAR
+               MOVE BOOK-ISBN10 TO D-BOOK-ISBN10
+               MOVE BOOK-SYNOPSIS TO D-BOOK-SYNOPSIS
                DISPLAY D-BOOK-REC
                EXEC SQL
                    FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR,
-                                 :BOOK-YEAR
+                                 :BOOK-YEAR, :BOOK-ISBN10, 
+                                 :BOOK-SYNOPSIS
                END-EXEC
            END-PERFORM.
 
