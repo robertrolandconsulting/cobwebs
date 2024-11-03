@@ -101,6 +101,15 @@ su
 /opt/freeware/bin/odbcinst -i -d -f template.ini
 ```
 
+## Building
+
+Assuming you've completed the setup above, it should be as straightforward as:
+
+```bash
+make
+make run
+```
+
 ## LICENSE
 
 MIT license.
