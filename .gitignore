@@ -3,3 +3,4 @@ listbooks
 adduser
 /*.cob
 *.so
+env.local

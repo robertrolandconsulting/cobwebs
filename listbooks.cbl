@@ -12,6 +12,13 @@
        DATA DIVISION.
 
        WORKING-STORAGE SECTION.
+       01  DB-CONNECT-PARAMS.
+           05  DB-SERVER           PIC X(50).
+           05  DB-PORT             PIC X(5).
+           05  DB-DATABASE         PIC X(50).
+           05  DB-UID              PIC X(50).
+           05  DB-PWD              PIC X(50).
+
        01  D-BOOK-REC.
            05  D-BOOK-ID           PIC X(36).
            05  D-BOOK-NAME         PIC X(50).
@@ -49,12 +56,18 @@
            DISPLAY "LISTBOOKS STARTED".
 
       *    CONNECT TO THE DATABASE
+           ACCEPT DB-SERVER FROM ENVIRONMENT 'DB_SERVER'.
+           ACCEPT DB-PORT FROM ENVIRONMENT 'DB_PORT'.
+           ACCEPT DB-DATABASE FROM ENVIRONMENT 'DB_DATABASE'.
+           ACCEPT DB-UID FROM ENVIRONMENT 'DB_UID'.
+           ACCEPT DB-PWD FROM ENVIRONMENT 'DB_PWD'.
+
            STRING 'DRIVER={PostgreSQL};'
-                  'SERVER=localhost;'
-                  'PORT=5432;'
-                  'DATABASE=books;'
-                  'UID=books;'
-                  'PWD=b00ks!;'
+                  'SERVER=' FUNCTION TRIM(DB-SERVER) ';'
+                  'PORT=' FUNCTION TRIM(DB-PORT) ';'
+                  'DATABASE=' FUNCTION TRIM(DB-DATABASE) ';'
+                  'UID=' FUNCTION TRIM(DB-UID) ';'
+                  'PWD=' FUNCTION TRIM(DB-PWD) ';'
            INTO BUFFER.
 
            EXEC SQL
