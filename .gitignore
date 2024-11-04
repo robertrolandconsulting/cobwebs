@@ -1,4 +1,5 @@
 .vscode/
 listbooks
-*.cob
-
+adduser
+/*.cob
+*.so
