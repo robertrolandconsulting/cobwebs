@@ -1,0 +1,110 @@
+      ********************************************
+      * Route HTTP requests
+      *
+      * router
+      *
+      * Copyright (c) 2024 Robert Roland
+      ********************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.   router.
+
+       DATA DIVISION.
+
+       WORKING-STORAGE SECTION.
+
+       01  HOSTVARS.
+           05 BUFFER               PIC X(1024).
+
+       01  REQUEST-VARS.
+           05 NUM-ROUTES           PIC S9(04) COMP.
+           05 ROUTE-TABLE OCCURS 10 TIMES INDEXED BY ROUTE-IDX.
+      * GET / POST / PUT / PATCH / DELETE / HEAD
+               10 ROUTE-METHOD        PIC X(6).
+               10 ROUTE-PATH          PIC X(1024).
+               10 ROUTE-DESTINATION   PIC X(100).
+
+           05 REQUEST-URI             PIC X(1024).
+           05 REQUEST-METHOD          PIC X(6).
+
+       01  SPLIT-QUERY.
+           05 SPLIT-PATH-PIECES OCCURS 99 TIMES.                        
+              10 SPLIT-PATH-PIECE PIC X(80) VALUE SPACES. 
+           05 SPLIT-PATTERN-PIECES OCCURS 99 TIMES.
+              10 SPLIT-PATTERN-PIECE PIC X(80) VALUE SPACES. 
+             
+       77  REQ-URI-PART    PIC X(100).
+       77  ROUTE-URI-PART  PIC X(100).
+
+       77  COUNTER PIC S9(04) COMP. 
+       77  POS     PIC S9(04).
+
+       77  TOTAL-PIECES PIC S9(04).
+
+       LINKAGE SECTION.           
+
+       PROCEDURE DIVISION.
+
+       ROUTE-TEST.
+           DISPLAY "Testing routing".
+
+           MOVE 'PUT' TO ROUTE-METHOD(1).
+           MOVE '/api/foo' TO ROUTE-PATH(1).          
+
+           MOVE 'GET' TO ROUTE-METHOD(2).
+           MOVE '/api/foo/:bar' TO ROUTE-PATH(2).
+
+           MOVE 2 TO NUM-ROUTES.
+
+           MOVE 'GET' TO REQUEST-METHOD.
+           MOVE '/api/foo/1234' TO REQUEST-URI.
+
+           DISPLAY "There are " NUM-ROUTES " routes defined".
+
+           PERFORM MATCH-ROUTE
+
+           DISPLAY "Done".
+           GOBACK.
+
+       MATCH-ROUTE.
+      *
+      * General pattern here:
+      *    UNSTRING the path from the CGI request
+      *    Loop over the ROUTE-TABLE
+      *    IF ROUTE-METHOD matches, UNSTRING the ROUTE-PATH
+      *    Loop over the parts AND check FOR matches
+      *    ANY :variable name gets stored as a VALUE IN the
+      *      request parameters
+
+           DISPLAY "Route scan".
+
+           PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 99
+               SUBTRACT 1 FROM COUNTER GIVING POS
+
+               UNSTRING REQUEST-URI DELIMITED BY ALL '/'
+                   INTO SPLIT-PATH-PIECES(POS)
+                   TALLYING IN TOTAL-PIECES
+               END-UNSTRING
+           END-PERFORM
+
+           DISPLAY "Request pieces " TOTAL-PIECES
+           
+               PERFORM VARYING ROUTE-IDX FROM 1 BY 1 
+                   UNTIL ROUTE-IDX > NUM-ROUTES
+
+                   IF REQUEST-METHOD = ROUTE-METHOD(ROUTE-IDX)
+                       DISPLAY "Matched method at " ROUTE-IDX
+
+                       PERFORM VARYING COUNTER FROM 2 BY 1 
+                           UNTIL COUNTER > 99
+
+                           SUBTRACT 1 FROM COUNTER GIVING POS
+
+                           UNSTRING REQUEST-URI DELIMITED BY ALL '/'
+                               INTO SPLIT-PATH-PIECES(POS)
+                           END-UNSTRING
+
+                           DISPLAY SPLIT-PATH-PIECES(COUNTER)
+                       END-PERFORM 
+                   END-IF
+               END-PERFORM.
+

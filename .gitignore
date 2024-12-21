@@ -1,6 +1,8 @@
 .vscode/
 listbooks
 adduser
+router
 /*.cob
 *.so
 env.local
+*~

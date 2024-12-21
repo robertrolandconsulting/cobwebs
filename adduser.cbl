@@ -1,8 +1,7 @@
       ********************************************
       * Add a user
       *
-      * ADDUSER
-      *
+      * Adduser
       *
       * Copyright (c) 2024 Robert Roland
       ********************************************
@@ -65,7 +64,7 @@
 
            DISPLAY 'Enter password: '.
            ACCEPT WS-INPUT.
-           MOVE FUNCTION stored-char-length(WS-INPUT) 
+           MOVE FUNCTION stored-char-length(WS-INPUT)
                TO WS-INPUT-BYTE-LEN.
 
            CALL "SHA3-512" USING WS-INPUT
@@ -73,7 +72,7 @@
                                  WS-SHA3-512-OUTPUT
            END-CALL.
 
-           MOVE FUNCTION HEX-TO-CHAR(WS-SHA3-512-OUTPUT) 
+           MOVE FUNCTION HEX-TO-CHAR(WS-SHA3-512-OUTPUT)
                TO USER-PW_HASH.
 
            EXEC SQL
