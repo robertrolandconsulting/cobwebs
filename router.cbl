@@ -27,20 +27,20 @@
            05 REQUEST-METHOD          PIC X(6).
 
        01  SPLIT-QUERY.
-           05 SPLIT-PATH-PIECES OCCURS 99 TIMES.                        
-              10 SPLIT-PATH-PIECE PIC X(80) VALUE SPACES. 
-           05 SPLIT-PATTERN-PIECES OCCURS 99 TIMES.
-              10 SPLIT-PATTERN-PIECE PIC X(80) VALUE SPACES. 
-             
+           05 SPLIT-PATH-PIECES OCCURS 10 TIMES.
+              10 SPLIT-PATH-PIECE PIC X(80) VALUE SPACES.
+           05 SPLIT-PATTERN-PIECES OCCURS 10 TIMES.
+              10 SPLIT-PATTERN-PIECE PIC X(80) VALUE SPACES.
+
        77  REQ-URI-PART    PIC X(100).
        77  ROUTE-URI-PART  PIC X(100).
 
-       77  COUNTER PIC S9(04) COMP. 
+       77  COUNTER PIC S9(04) COMP.
        77  POS     PIC S9(04).
 
        77  TOTAL-PIECES PIC S9(04).
 
-       LINKAGE SECTION.           
+       LINKAGE SECTION.
 
        PROCEDURE DIVISION.
 
@@ -48,7 +48,7 @@
            DISPLAY "Testing routing".
 
            MOVE 'PUT' TO ROUTE-METHOD(1).
-           MOVE '/api/foo' TO ROUTE-PATH(1).          
+           MOVE '/api/foo' TO ROUTE-PATH(1).
 
            MOVE 'GET' TO ROUTE-METHOD(2).
            MOVE '/api/foo/:bar' TO ROUTE-PATH(2).
@@ -66,7 +66,7 @@
            GOBACK.
 
        MATCH-ROUTE.
-      *
+
       * General pattern here:
       *    UNSTRING the path from the CGI request
       *    Loop over the ROUTE-TABLE
@@ -77,7 +77,11 @@
 
            DISPLAY "Route scan".
 
-           PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 99
+           MOVE 0 TO TOTAL-PIECES
+           MOVE 1 TO COUNTER
+           MOVE 1 TO POS
+           
+           PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 10
                SUBTRACT 1 FROM COUNTER GIVING POS
 
                UNSTRING REQUEST-URI DELIMITED BY ALL '/'
@@ -86,25 +90,29 @@
                END-UNSTRING
            END-PERFORM
 
+           DISPLAY "Request-URI " REQUEST-URI
            DISPLAY "Request pieces " TOTAL-PIECES
-           
-               PERFORM VARYING ROUTE-IDX FROM 1 BY 1 
-                   UNTIL ROUTE-IDX > NUM-ROUTES
+           DISPLAY "Piece 1 " SPLIT-PATH-PIECES(1)
 
-                   IF REQUEST-METHOD = ROUTE-METHOD(ROUTE-IDX)
-                       DISPLAY "Matched method at " ROUTE-IDX
+           PERFORM VARYING ROUTE-IDX FROM 1 BY 1
+               UNTIL ROUTE-IDX > NUM-ROUTES
 
-                       PERFORM VARYING COUNTER FROM 2 BY 1 
-                           UNTIL COUNTER > 99
+               IF REQUEST-METHOD = ROUTE-METHOD(ROUTE-IDX)
+                   DISPLAY "Matched method at " ROUTE-IDX
 
-                           SUBTRACT 1 FROM COUNTER GIVING POS
+                   MOVE 1 TO COUNTER
+                   MOVE 1 TO POS
 
-                           UNSTRING REQUEST-URI DELIMITED BY ALL '/'
-                               INTO SPLIT-PATH-PIECES(POS)
-                           END-UNSTRING
+                   PERFORM VARYING COUNTER FROM 2 BY 1
+                       UNTIL COUNTER > 10
 
-                           DISPLAY SPLIT-PATH-PIECES(COUNTER)
-                       END-PERFORM 
-                   END-IF
-               END-PERFORM.
+                       SUBTRACT 1 FROM COUNTER GIVING POS
 
+                       UNSTRING REQUEST-URI DELIMITED BY ALL '/'
+                           INTO SPLIT-PATH-PIECES(POS)
+                       END-UNSTRING
+
+                       DISPLAY SPLIT-PATH-PIECES(COUNTER)
+                   END-PERFORM
+               END-IF
+           END-PERFORM.
