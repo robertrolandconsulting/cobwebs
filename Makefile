@@ -1,6 +1,6 @@
-.PHONY: all cobsha3 run
+.PHONY: all
 
-COBC_FLAGS=-Wall -O
+COBC_FLAGS=-Wall
 
 COBSHA3_FILES=$(wildcard lib/cobsha3/*.cob)
 
@@ -27,5 +27,5 @@ run-adduser: adduser
 	export COB_PRE_LOAD=/usr/local/lib/libocsql.so:./cobsha3.so ; ./adduser
 
 clean:
-	rm -f *.cob listbooks adduser cobsha3.so
+	rm -f *.cob cobsha3.so listbooks router adduser
 
