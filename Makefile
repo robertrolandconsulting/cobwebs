@@ -4,28 +4,32 @@ COBC_FLAGS=-Wall
 
 COBSHA3_FILES=$(wildcard lib/cobsha3/*.cob)
 
-all: listbooks adduser router
+all: out/listbooks out/adduser out/router
 
-listbooks: listbooks.cbl
-	esqlOC listbooks.cbl
-	cobc $(COBC_FLAGS) -x listbooks.cob -locsql
+init:
+	mkdir -p generated
+	mkdir -p out
 
-cobsha3.so: $(COBSHA3_FILES)
-	cobc -free -o cobsha3 $(COBC_FLAGS) -b $(COBSHA3_FILES)
+out/listbooks: init listbooks.cbl
+	esqlOC -o generated/listbooks.cob listbooks.cbl
+	cobc $(COBC_FLAGS) -x generated/listbooks.cob -o out/listbooks -locsql
 
-adduser: cobsha3.so adduser.cbl
-	esqlOC adduser.cbl
-	cobc $(COBC_FLAGS) -x adduser.cob -locsql
+out/cobsha3.so: init $(COBSHA3_FILES)
+	cobc -free -o out/cobsha3 $(COBC_FLAGS) -b $(COBSHA3_FILES)
 
-router: router.cbl
-	cobc $(COBC_FLAGS) -x router.cbl
+out/adduser: init out/cobsha3.so adduser.cbl
+	esqlOC -o generated/adduser.cob adduser.cbl
+	cobc $(COBC_FLAGS) -x generated/adduser.cob -o out/adduser -Lout/ -locsql
 
-run-listbooks: listbooks
-	export COB_PRE_LOAD=/usr/local/lib/libocsql.so:./cobsha3.so ; ./listbooks
+out/router: init router.cbl
+	cobc $(COBC_FLAGS) -x router.cbl -o out/router
 
-run-adduser: adduser
-	export COB_PRE_LOAD=/usr/local/lib/libocsql.so:./cobsha3.so ; ./adduser
+run-listbooks: out/listbooks
+	export COB_PRE_LOAD=/usr/local/lib/libocsql.so:./out/cobsha3.so ; ./out/listbooks
+
+run-adduser: out/adduser
+	export COB_PRE_LOAD=/usr/local/lib/libocsql.so:./out/cobsha3.so ; ./out/adduser
 
 clean:
-	rm -f *.cob cobsha3.so listbooks router adduser
+	rm -f generated/ out/
 

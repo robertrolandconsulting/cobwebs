@@ -1,8 +1,5 @@
 .vscode/
-listbooks
-adduser
-router
-/*.cob
-*.so
+out/
+generated/
 env.local
 *~
