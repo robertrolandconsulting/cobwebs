@@ -80,7 +80,8 @@
            MOVE 0 TO TOTAL-PIECES
            MOVE 1 TO COUNTER
            MOVE 1 TO POS
-           
+
+      * Split up the user request string into an array
            PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 10
                SUBTRACT 1 FROM COUNTER GIVING POS
 
