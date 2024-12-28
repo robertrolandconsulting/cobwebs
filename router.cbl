@@ -29,12 +29,15 @@
        01  request-uri-split.
            05 request-uri-pieces OCCURS 10 TIMES.
               10 request-uri-piece PIC X(80) VALUE SPACES.
-               77  request-uri-count PIC S9(04).
+           05  request-uri-count PIC S9(04).
 
        01  route-uri-split.
            05 route-uri-pieces OCCURS 10 TIMES.
-              10 route-uri-piece PIC X(80) VALUE SPACES.
-               77  route-uri-count PIC S9(04).
+               10 route-uri-piece PIC X(80) VALUE SPACES.
+           05  route-uri-count PIC S9(04).
+       
+       01  matched  pic x(1).
+       01  piece-idx PIC S9(04).
 
        LINKAGE SECTION.
 
@@ -74,7 +77,9 @@
 
       * Split UP the user request STRING INTO an array
            CALL 'split-request-uri' 
-           USING REQUEST-URI request-uri-split
+           USING REQUEST-URI REQUEST-URI-SPLIT
+           
+           MOVE 'n' TO matched
 
            PERFORM VARYING ROUTE-IDX FROM 1 BY 1
                UNTIL ROUTE-IDX > NUM-ROUTES
@@ -86,9 +91,22 @@
                    USING ROUTE-PATH(ROUTE-IDX) ROUTE-URI-SPLIT
                    
                    IF REQUEST-URI-COUNT = ROUTE-URI-COUNT
-                       DISPLAY "found a route with the same pieces"
-                   END-IF
+                       DISPLAY "possible match on count"
 
+                       MOVE 1 TO piece-idx
+
+                       DISPLAY 'uri-count ' route-uri-count
+
+                       PERFORM VARYING piece-idx 
+                           FROM 1 BY 1
+                           UNTIL piece-idx > route-uri-count
+
+                           DISPLAY 'piece-idx ' piece-idx
+
+                       END-PERFORM
+
+                       MOVE 'y' to matched
+                   END-IF
                END-IF
            END-PERFORM.
 
@@ -105,37 +123,40 @@
            05 split-uri-pieces OCCURS 10 TIMES.
               10 split-uri-piece PIC X(80) VALUE SPACES.
 
-           77  split-uri-count PIC S9(04).
+           05  split-uri-count PIC S9(04) VALUE 0.
 
        77  COUNTER PIC S9(04) COMP.
-       77  POS     PIC S9(04).
+       77  PTR     PIC S9(04) VALUE 1.
 
        LINKAGE SECTION.
 
        01  uri-values.
-           05  uri PIC X(1024).
+           05  uri PIC X(1024) VALUE SPACES.
 
        01  split-uri-out.
            05 split-uri-pieces-out OCCURS 10 TIMES.
               10 split-uri-piece-out PIC X(80) VALUE SPACES.
-           77  split-uri-count-out PIC S9(04).
+           05  split-uri-count-out PIC S9(04) VALUE 0.
 
        PROCEDURE DIVISION USING URI-VALUES SPLIT-URI-OUT.
-       
-      D DISPLAY 'Splitting ' uri.
+              
+       MOVE 1 TO COUNTER.
+       MOVE 1 TO PTR.
 
-       PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 10
-           SUBTRACT 1 FROM COUNTER GIVING POS
+       MOVE 0 TO split-uri-count.
 
-           UNSTRING uri DELIMITED BY ALL '/'
-               INTO split-uri-pieces(POS)
+       PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > 10
+           UNSTRING URI DELIMITED BY ALL '/'          
+               INTO SPLIT-URI-PIECES(COUNTER)
+               WITH POINTER PTR               
                TALLYING IN split-uri-count
            END-UNSTRING
        END-PERFORM.
 
        MOVE SPLIT-URI TO SPLIT-URI-OUT.
        
-      D DISPLAY 'Done'.
+       DISPLAY 'Done = ' split-uri-count.
+       DISPLAY 'Out  = ' split-uri-count-out.
        GOBACK.
            
        END PROGRAM split-request-uri.
