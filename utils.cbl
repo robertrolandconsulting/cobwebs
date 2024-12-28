@@ -22,6 +22,8 @@
 
        LINKAGE SECTION.
 
+       01  split-delimiter PIC X(1) VALUE SPACES.
+
        01  string-values.
            05  string-value PIC X(1024) VALUE SPACES.
 
@@ -30,7 +32,8 @@
                10  split-string-piece-out PIC X(80) VALUE SPACES.
            05  split-string-count-out PIC S9(04) VALUE 0.
 
-       PROCEDURE DIVISION USING string-values split-string-out.
+       PROCEDURE DIVISION
+       USING split-delimiter string-values split-string-out.
 
        MOVE 1 TO counter.
        MOVE 1 TO ptr.
@@ -38,7 +41,7 @@
        MOVE 0 TO split-string-count.
 
        PERFORM VARYING counter FROM 1 BY 1 UNTIL counter > 10
-           UNSTRING string-value DELIMITED BY ALL '/'
+           UNSTRING string-value DELIMITED BY ALL split-delimiter
                INTO split-string-pieces(counter)
                WITH POINTER ptr
                TALLYING IN split-string-count

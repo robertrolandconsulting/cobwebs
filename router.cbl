@@ -77,7 +77,7 @@
 
       * Split UP the user request STRING INTO an array
            CALL 'string-split'
-           USING request-uri request-uri-split
+           USING '/' request-uri request-uri-split
 
            MOVE 'n' TO matched
 
@@ -88,7 +88,7 @@
                    DISPLAY "Matched method at " route-idx
 
                    CALL 'string-split'
-                   USING route-path(route-idx) route-uri-split
+                   USING '/' route-path(route-idx) route-uri-split
 
                    IF request-uri-count = route-uri-count
                        DISPLAY "possible match on count"
