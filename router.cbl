@@ -118,7 +118,6 @@
            END-PERFORM.
 
            GOBACK.
-       END PROGRAM router.
 
        IDENTIFICATION DIVISION.
 
@@ -126,6 +125,13 @@
 
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+
+       01  split-uri.
+           05 split-uri-pieces OCCURS 10 TIMES.
+              10 split-uri-piece PIC X(80) VALUE SPACES.
+
+           77  split-uri-count PIC S9(04).
+
        77  COUNTER PIC S9(04) COMP.
        77  POS     PIC S9(04).
 
@@ -135,12 +141,13 @@
            05  uri PIC X(1024).
 
        01  split-uri-out.
-           05 split-uri-pieces OCCURS 10 TIMES.
-              10 split-uri-piece PIC X(80) VALUE SPACES.
+           05 split-uri-pieces-out OCCURS 10 TIMES.
+              10 split-uri-piece-out PIC X(80) VALUE SPACES.
+           77  split-uri-count-out PIC S9(04).
 
-           77  split-uri-count PIC S9(04).
-
-       PROCEDURE DIVISION USING uri-values split-uri-out.
+       PROCEDURE DIVISION USING URI-VALUES SPLIT-URI-OUT.
+       
+      D DISPLAY 'Splitting ' uri.
 
        PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 10
            SUBTRACT 1 FROM COUNTER GIVING POS
@@ -151,6 +158,11 @@
            END-UNSTRING
        END-PERFORM.
 
+       MOVE SPLIT-URI TO SPLIT-URI-OUT.
+       
+      D DISPLAY 'Done'.
        GOBACK.
            
        END PROGRAM split-request-uri.
+
+       END PROGRAM router.
