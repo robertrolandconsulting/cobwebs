@@ -7,8 +7,8 @@ COBSHA3_FILES=$(wildcard lib/cobsha3/*.cob)
 all: out/listbooks out/adduser out/router
 
 init:
-	mkdir -p generated
-	mkdir -p out
+	@mkdir -p generated
+	@mkdir -p out
 
 out/listbooks: init listbooks.cbl
 	esqlOC -o generated/listbooks.cob listbooks.cbl
@@ -31,5 +31,5 @@ run-adduser: out/adduser
 	export COB_PRE_LOAD=/usr/local/lib/libocsql.so:./out/cobsha3.so ; ./out/adduser
 
 clean:
-	rm -f generated/ out/
+	rm -rf generated/ out/
 

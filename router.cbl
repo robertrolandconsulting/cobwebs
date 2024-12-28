@@ -26,6 +26,11 @@
            05 REQUEST-URI             PIC X(1024).
            05 REQUEST-METHOD          PIC X(6).
 
+       01  request-uri-split.
+           05 request-uri-pieces OCCURS 10 TIMES.
+              10 request-uri-piece PIC X(80) VALUE SPACES.
+               77  request-uri-count PIC S9(04).
+
        01  SPLIT-QUERY.
            05 SPLIT-PATH-PIECES OCCURS 10 TIMES.
               10 SPLIT-PATH-PIECE PIC X(80) VALUE SPACES.
@@ -81,15 +86,9 @@
            MOVE 1 TO COUNTER
            MOVE 1 TO POS
 
-      * Split up the user request string into an array
-           PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 10
-               SUBTRACT 1 FROM COUNTER GIVING POS
-
-               UNSTRING REQUEST-URI DELIMITED BY ALL '/'
-                   INTO SPLIT-PATH-PIECES(POS)
-                   TALLYING IN TOTAL-PIECES
-               END-UNSTRING
-           END-PERFORM
+      * Split UP the user request STRING INTO an array
+           CALL 'split-request-uri' 
+           USING REQUEST-URI request-uri-split
 
            DISPLAY "Request-URI " REQUEST-URI
            DISPLAY "Request pieces " TOTAL-PIECES
@@ -117,3 +116,41 @@
                    END-PERFORM
                END-IF
            END-PERFORM.
+
+           GOBACK.
+       END PROGRAM router.
+
+       IDENTIFICATION DIVISION.
+
+       PROGRAM-ID. split-request-uri.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       77  COUNTER PIC S9(04) COMP.
+       77  POS     PIC S9(04).
+
+       LINKAGE SECTION.
+
+       01  uri-values.
+           05  uri PIC X(1024).
+
+       01  split-uri-out.
+           05 split-uri-pieces OCCURS 10 TIMES.
+              10 split-uri-piece PIC X(80) VALUE SPACES.
+
+           77  split-uri-count PIC S9(04).
+
+       PROCEDURE DIVISION USING uri-values split-uri-out.
+
+       PERFORM VARYING COUNTER FROM 2 BY 1 UNTIL COUNTER > 10
+           SUBTRACT 1 FROM COUNTER GIVING POS
+
+           UNSTRING uri DELIMITED BY ALL '/'
+               INTO split-uri-pieces(POS)
+               TALLYING IN split-uri-count
+           END-UNSTRING
+       END-PERFORM.
+
+       GOBACK.
+           
+       END PROGRAM split-request-uri.
