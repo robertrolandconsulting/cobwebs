@@ -12,19 +12,19 @@
 
        WORKING-STORAGE SECTION.
 
-       01  HOSTVARS.
-           05 BUFFER               PIC X(1024).
+       01  hostvars.
+           05 buffer               PIC X(1024).
 
-       01  REQUEST-VARS.
-           05 NUM-ROUTES           PIC S9(04) COMP.
-           05 ROUTE-TABLE OCCURS 10 TIMES INDEXED BY ROUTE-IDX.
+       01  request-vars.
+           05 num-routes           PIC S9(04) COMP.
+           05 route-table OCCURS 10 TIMES INDEXED BY route-idx.
       * GET / POST / PUT / PATCH / DELETE / HEAD
-               10 ROUTE-METHOD        PIC X(6).
-               10 ROUTE-PATH          PIC X(1024).
-               10 ROUTE-DESTINATION   PIC X(100).
+               10 route-method        PIC X(6).
+               10 route-path          PIC X(1024).
+               10 route-destination   PIC X(100).
 
-           05 REQUEST-URI             PIC X(1024).
-           05 REQUEST-METHOD          PIC X(6).
+           05 request-uri             PIC X(1024).
+           05 request-method          PIC X(6).
 
        01  request-uri-split.
            05 request-uri-pieces OCCURS 10 TIMES.
@@ -45,18 +45,18 @@
 
            DISPLAY "Testing routing".
 
-           MOVE 'PUT' TO ROUTE-METHOD(1).
-           MOVE '/api/foo' TO ROUTE-PATH(1).
+           MOVE 'PUT' TO route-method(1).
+           MOVE '/api/foo' TO route-path(1).
 
-           MOVE 'GET' TO ROUTE-METHOD(2).
-           MOVE '/api/foo/:bar' TO ROUTE-PATH(2).
+           MOVE 'GET' TO route-method(2).
+           MOVE '/api/foo/:bar' TO route-path(2).
 
-           MOVE 2 TO NUM-ROUTES.
+           MOVE 2 TO num-routes.
 
-           MOVE 'GET' TO REQUEST-METHOD.
-           MOVE '/api/foo/1234' TO REQUEST-URI.
+           MOVE 'GET' TO request-method.
+           MOVE '/api/foo/1234' TO request-uri.
 
-           DISPLAY "There are " NUM-ROUTES " routes defined".
+           DISPLAY "There are " num-routes " routes defined".
 
            PERFORM MATCH-ROUTE
 
@@ -77,20 +77,20 @@
 
       * Split UP the user request STRING INTO an array
            CALL 'split-request-uri' 
-           USING REQUEST-URI REQUEST-URI-SPLIT
+           USING request-uri request-uri-split
            
            MOVE 'n' TO matched
 
-           PERFORM VARYING ROUTE-IDX FROM 1 BY 1
-               UNTIL ROUTE-IDX > NUM-ROUTES
+           PERFORM VARYING route-idx FROM 1 BY 1
+               UNTIL route-idx > num-routes
 
-               IF REQUEST-METHOD = ROUTE-METHOD(ROUTE-IDX)
-                   DISPLAY "Matched method at " ROUTE-IDX
+               IF request-method = route-method(route-idx)
+                   DISPLAY "Matched method at " route-idx
 
                    CALL 'split-request-uri' 
-                   USING ROUTE-PATH(ROUTE-IDX) ROUTE-URI-SPLIT
+                   USING route-path(route-idx) route-uri-split
                    
-                   IF REQUEST-URI-COUNT = ROUTE-URI-COUNT
+                   IF request-uri-count = route-uri-count
                        DISPLAY "possible match on count"
 
                        MOVE 1 TO piece-idx
@@ -123,11 +123,10 @@
        01  split-uri.
            05 split-uri-pieces OCCURS 10 TIMES.
               10 split-uri-piece PIC X(80) VALUE SPACES.
-
            05  split-uri-count PIC S9(04) VALUE 0.
 
-       77  COUNTER PIC S9(04) COMP.
-       77  PTR     PIC S9(04) VALUE 1.
+       77  counter PIC S9(04) COMP.
+       77  ptr     PIC S9(04) VALUE 1.
 
        LINKAGE SECTION.
 
@@ -141,20 +140,20 @@
 
        PROCEDURE DIVISION USING URI-VALUES SPLIT-URI-OUT.
               
-       MOVE 1 TO COUNTER.
-       MOVE 1 TO PTR.
+       MOVE 1 TO counter.
+       MOVE 1 TO ptr.
 
        MOVE 0 TO split-uri-count.
 
-       PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > 10
-           UNSTRING URI DELIMITED BY ALL '/'          
-               INTO SPLIT-URI-PIECES(COUNTER)
-               WITH POINTER PTR               
+       PERFORM VARYING counter FROM 1 BY 1 UNTIL counter > 10
+           UNSTRING uri DELIMITED BY ALL '/'          
+               INTO split-uri-pieces(counter)
+               WITH POINTER ptr               
                TALLYING IN split-uri-count
            END-UNSTRING
        END-PERFORM.
 
-       MOVE SPLIT-URI TO SPLIT-URI-OUT.
+       MOVE split-uri TO split-uri-out.
        
        DISPLAY 'Done = ' split-uri-count.
        DISPLAY 'Out  = ' split-uri-count-out.
