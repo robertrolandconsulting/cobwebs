@@ -31,25 +31,15 @@
               10 request-uri-piece PIC X(80) VALUE SPACES.
                77  request-uri-count PIC S9(04).
 
-       01  SPLIT-QUERY.
-           05 SPLIT-PATH-PIECES OCCURS 10 TIMES.
-              10 SPLIT-PATH-PIECE PIC X(80) VALUE SPACES.
-           05 SPLIT-PATTERN-PIECES OCCURS 10 TIMES.
-              10 SPLIT-PATTERN-PIECE PIC X(80) VALUE SPACES.
-
-       77  REQ-URI-PART    PIC X(100).
-       77  ROUTE-URI-PART  PIC X(100).
-
-       77  COUNTER PIC S9(04) COMP.
-       77  POS     PIC S9(04).
-
-       77  TOTAL-PIECES PIC S9(04).
+       01  route-uri-split.
+           05 route-uri-pieces OCCURS 10 TIMES.
+              10 route-uri-piece PIC X(80) VALUE SPACES.
+               77  route-uri-count PIC S9(04).
 
        LINKAGE SECTION.
 
        PROCEDURE DIVISION.
 
-       ROUTE-TEST.
            DISPLAY "Testing routing".
 
            MOVE 'PUT' TO ROUTE-METHOD(1).
@@ -82,17 +72,9 @@
 
            DISPLAY "Route scan".
 
-           MOVE 0 TO TOTAL-PIECES
-           MOVE 1 TO COUNTER
-           MOVE 1 TO POS
-
       * Split UP the user request STRING INTO an array
            CALL 'split-request-uri' 
            USING REQUEST-URI request-uri-split
-
-           DISPLAY "Request-URI " REQUEST-URI
-           DISPLAY "Request pieces " TOTAL-PIECES
-           DISPLAY "Piece 1 " SPLIT-PATH-PIECES(1)
 
            PERFORM VARYING ROUTE-IDX FROM 1 BY 1
                UNTIL ROUTE-IDX > NUM-ROUTES
@@ -100,20 +82,13 @@
                IF REQUEST-METHOD = ROUTE-METHOD(ROUTE-IDX)
                    DISPLAY "Matched method at " ROUTE-IDX
 
-                   MOVE 1 TO COUNTER
-                   MOVE 1 TO POS
+                   CALL 'split-request-uri' 
+                   USING ROUTE-PATH(ROUTE-IDX) ROUTE-URI-SPLIT
+                   
+                   IF REQUEST-URI-COUNT = ROUTE-URI-COUNT
+                       DISPLAY "found a route with the same pieces"
+                   END-IF
 
-                   PERFORM VARYING COUNTER FROM 2 BY 1
-                       UNTIL COUNTER > 10
-
-                       SUBTRACT 1 FROM COUNTER GIVING POS
-
-                       UNSTRING REQUEST-URI DELIMITED BY ALL '/'
-                           INTO SPLIT-PATH-PIECES(POS)
-                       END-UNSTRING
-
-                       DISPLAY SPLIT-PATH-PIECES(COUNTER)
-                   END-PERFORM
                END-IF
            END-PERFORM.
 
