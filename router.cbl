@@ -111,13 +111,14 @@
            END-PERFORM.
 
            GOBACK.
+       END PROGRAM router.
 
        IDENTIFICATION DIVISION.
-
        PROGRAM-ID. split-request-uri.
 
        DATA DIVISION.
-       WORKING-STORAGE SECTION.
+
+       LOCAL-STORAGE SECTION.
 
        01  split-uri.
            05 split-uri-pieces OCCURS 10 TIMES.
@@ -160,5 +161,3 @@
        GOBACK.
            
        END PROGRAM split-request-uri.
-
-       END PROGRAM router.
