@@ -33,25 +33,25 @@
            05  split-string-count-out PIC S9(04) VALUE 0.
 
        PROCEDURE DIVISION
-       USING split-delimiter string-values split-string-out.
+          USING split-delimiter string-values split-string-out.
 
-       MOVE 1 TO counter.
-       MOVE 1 TO ptr.
+           MOVE 1 TO counter.
+           MOVE 1 TO ptr.
 
-       MOVE 0 TO split-string-count.
+           MOVE 0 TO split-string-count.
 
-       PERFORM VARYING counter FROM 1 BY 1 UNTIL counter > 10
-           UNSTRING string-value DELIMITED BY ALL split-delimiter
-               INTO split-string-pieces(counter)
-               WITH POINTER ptr
-               TALLYING IN split-string-count
-           END-UNSTRING
-       END-PERFORM.
+           PERFORM VARYING counter FROM 1 BY 1 UNTIL counter > 10
+              UNSTRING string-value DELIMITED BY ALL split-delimiter
+                       INTO split-string-pieces(counter)
+                       WITH POINTER ptr
+                       TALLYING IN split-string-count
+              END-UNSTRING
+           END-PERFORM.
 
-       MOVE split-string TO split-string-out.
+           MOVE split-string TO split-string-out.
 
-       DISPLAY 'Done = ' split-string-count.
-       DISPLAY 'Out  = ' split-string-count-out.
-       GOBACK.
+           DISPLAY 'Done = ' split-string-count.
+           DISPLAY 'Out  = ' split-string-count-out.
+           GOBACK.
 
        END PROGRAM string-split.
