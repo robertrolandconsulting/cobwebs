@@ -79,7 +79,7 @@
            CALL 'string-split'
                 USING '/' request-uri request-uri-split
 
-           MOVE 'n' TO matched
+           MOVE ' ' TO matched
 
            PERFORM VARYING route-idx FROM 1 BY 1
                    UNTIL route-idx > num-routes
@@ -101,23 +101,21 @@
                             FROM 1 BY 1
                             UNTIL (piece-idx > route-uri-count) 
                             OR (matched = 'n')
-
-                       DISPLAY 'piece-idx ' piece-idx
-                       IF request-uri-pieces(route-idx) NOT = 
-                          route-uri-pieces(route-idx)
-
+                       EVALUATE TRUE
+                       WHEN route-uri-pieces(piece-idx)(1:1) = ':'
+      * parse variable
+                          DISPLAY 'var = ' route-uri-pieces(piece-idx)                    
+                       WHEN request-uri-pieces(route-idx) NOT = 
+                       route-uri-pieces(route-idx)
                           MOVE 'n' to matched
-                       END-IF
+                       WHEN OTHER
+                          MOVE 'y' to matched
+                       END-EVALUATE
                     END-PERFORM
+                 END-IF                       
+           END-PERFORM
 
-                    if matched NOT = 'n'
-                        MOVE 'y' to matched
-                    end-if
-                 END-IF
-              END-IF
-
-              DISPLAY 'matched = ' matched
-           END-PERFORM.
+           DISPLAY 'matched = ' matched
 
            GOBACK.
        END PROGRAM router.
