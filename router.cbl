@@ -26,6 +26,14 @@
        01  http-request.
            05  request-uri             PIC X(1024).
            05  request-method          PIC X(6).
+           05  request-headers OCCURS 10 TIMES.
+               10  request-header-key PIC X(80) VALUE SPACES.
+               10  request-header-value PIC X(1024) VALUE SPACES.
+           05  request-headers-count PIC S9(04).
+           05  request-parameters OCCURS 10 TIMES.
+               10  request-parameter-key PIC X(80) VALUE SPACES.
+               10  request-parameter-value PIC X(1024) VALUE SPACES.
+           05  request-parameters-count PIC S9(04).
 
        01  request-uri-split.
            05  request-uri-pieces OCCURS 10 TIMES.
