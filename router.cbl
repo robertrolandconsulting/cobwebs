@@ -15,7 +15,7 @@
        01  hostvars.
            05  buffer                 PIC X(1024).
 
-       01  request-vars.
+       01  router-config.
            05  num-routes             PIC S9(04) COMP.
            05  route-table OCCURS 10 TIMES INDEXED BY route-idx.
       * GET / POST / PUT / PATCH / DELETE / HEAD
@@ -23,6 +23,7 @@
                10 route-path          PIC X(1024).
                10 route-destination   PIC X(100).
 
+       01  http-request.
            05  request-uri             PIC X(1024).
            05  request-method          PIC X(6).
 
@@ -99,20 +100,20 @@
 
                     PERFORM VARYING piece-idx
                             FROM 1 BY 1
-                            UNTIL (piece-idx > route-uri-count) 
+                            UNTIL (piece-idx > route-uri-count)
                             OR (matched = 'n')
                        EVALUATE TRUE
                        WHEN route-uri-pieces(piece-idx)(1:1) = ':'
       * parse variable
-                          DISPLAY 'var = ' route-uri-pieces(piece-idx)                    
-                       WHEN request-uri-pieces(route-idx) NOT = 
+                          DISPLAY 'var = ' route-uri-pieces(piece-idx)
+                       WHEN request-uri-pieces(route-idx) NOT =
                        route-uri-pieces(route-idx)
                           MOVE 'n' to matched
                        WHEN OTHER
                           MOVE 'y' to matched
                        END-EVALUATE
                     END-PERFORM
-                 END-IF                       
+                 END-IF
            END-PERFORM
 
            DISPLAY 'matched = ' matched

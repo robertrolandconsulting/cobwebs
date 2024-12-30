@@ -1,0 +1,10 @@
+[cobol]
+dialect = "gnucobol"
+source-format = "auto"
+copyexts = [ "cpy", "cbl", "cob" ]
+
+[[cobol.copybooks]]
+file-relative = false
+dir = "."
+
+[cobol.indent]
