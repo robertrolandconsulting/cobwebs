@@ -24,20 +24,34 @@
                10 route-destination   PIC X(100).
 
        01  http-request.
-           05  request-uri             PIC X(1024).
-           05  request-method          PIC X(6).
+           05  request-uri                 PIC X(1024).
+           05  request-method              PIC X(6).
+           05  request-auth-type           PIC X(100).
+           05  request-content-length      PIC S9(04).
+           05  request-date-local          PIC X(50).
+           05  request-date-gmt            PIC X(50).
+           05  request-document-name       PIC X(100).
+           05  request-document-root       PIC X(100).
+           05  request-document-uri        PIC X(100).
+           05  request-forwarded           PIC X(1024).
+           05  request-from                PIC X(1024).
+           05  request-gateway-interface   PIC X(1024).
+           05  request-http-accept         PIC X(1024).
+           05  request-http-accept-charset PIC X(1024).
+           05  request-http-accept-encoding PIC X(1024).
+           05  request-http-accept-language PIC X(1024).
            05  request-headers OCCURS 10 TIMES.
-               10  request-header-key PIC X(80) VALUE SPACES.
-               10  request-header-value PIC X(1024) VALUE SPACES.
-           05  request-headers-count PIC S9(04).
+               10  request-header-key      PIC X(80) VALUE SPACES.
+               10  request-header-value    PIC X(1024) VALUE SPACES.
+           05  request-headers-count       PIC S9(04).
            05  request-parameters OCCURS 10 TIMES.
-               10  request-parameter-key PIC X(80) VALUE SPACES.
+               10  request-parameter-key   PIC X(80) VALUE SPACES.
                10  request-parameter-value PIC X(1024) VALUE SPACES.
-           05  request-parameters-count PIC S9(04).
+           05  request-parameters-count    PIC S9(04).
 
        01  request-uri-split.
            05  request-uri-pieces OCCURS 10 TIMES.
-               10  request-uri-piece PIC X(80) VALUE SPACES.
+               10  request-uri-piece    PIC X(80) VALUE SPACES.
            05  request-uri-count        PIC S9(04).
 
        01  route-uri-split.
