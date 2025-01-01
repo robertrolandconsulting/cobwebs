@@ -7,7 +7,7 @@
 *> Copyright (c) 2024 Robert Roland
 *>*******************************************
 identification division.
-program-id. string-split.
+program-id. string-split is initial.
 
 data division.
 
