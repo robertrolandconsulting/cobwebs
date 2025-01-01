@@ -40,6 +40,45 @@
            05  request-http-accept-charset PIC X(1024).
            05  request-http-accept-encoding PIC X(1024).
            05  request-http-accept-language PIC X(1024).
+           05  request-cache-control        PIC X(1024).
+           05  request-connection           PIC X(1024).
+           05  request-http-cookie          PIC X(8192).
+           05  request-http-form            PIC X(8192).
+           05  request-http-host            PIC X(100).
+           05  request-http-referrer        PIC X(1024).
+           05  request-http-ua-color        PIC X(50).
+           05  request-ua-cpu               PIC X(50).
+           05  request-ua-os                PIC X(50).
+           05  request-ua-pixels            PIC x(50).
+           05  request-user-agent           PIC X(1024).
+           05  request-x-forwarded-for      PIC X(1024).
+           05  request-instance-id          PIC X(1024).
+           05  request-last-modified        PIC X(50).
+           05  request-page-count           PIC X(10).
+           05  request-path                 PIC X(4096).
+           05  request-path-info            PIC X(1024).
+           05  request-query-string         PIC X(1024).
+           05  request-query-string-unescaped PIC X(1024).
+           05  request-remote-addr          PIC X(1024).
+           05  request-remote-host          PIC X(1024).
+           05  request-remote-ident         PIC X(1024).
+           05  request-remote-port          PIC X(100).
+           05  request-script-filename      PIC X(1024).
+           05  request-script-name          PIC X(1024).
+           05  request-script-uri           PIC X(1024).
+           05  request-script-url           PIC X(1024).
+           05  request-server-admin         PIC X(1024).
+           05  request-server-name          PIC X(1024).
+           05  request-server-port          PIC X(100).
+           05  request-server-protocol      PIC X(100).
+           05  request-server-signature     PIC X(1024).
+           05  request-server-software      PIC X(1024).
+           05  request-total-hits           PIC X(100).
+           05  request-tz                   PIC X(100).
+           05  request-unique-id            PIC X(100).
+           05  request-user-name            PIC X(100).
+           05  request-visp-remote-addr     PIC X(1024).
+           05  request-visp-user            PIC X(1024).
            05  request-headers OCCURS 10 TIMES.
                10  request-header-key      PIC X(80) VALUE SPACES.
                10  request-header-value    PIC X(1024) VALUE SPACES.
