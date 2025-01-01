@@ -23,70 +23,7 @@
                10 route-path          PIC X(1024).
                10 route-destination   PIC X(100).
 
-       01  http-request.
-           05  request-uri                 PIC X(1024).
-           05  request-method              PIC X(6).
-           05  request-auth-type           PIC X(100).
-           05  request-content-length      PIC S9(04).
-           05  request-date-local          PIC X(50).
-           05  request-date-gmt            PIC X(50).
-           05  request-document-name       PIC X(100).
-           05  request-document-root       PIC X(100).
-           05  request-document-uri        PIC X(100).
-           05  request-forwarded           PIC X(1024).
-           05  request-from                PIC X(1024).
-           05  request-gateway-interface   PIC X(1024).
-           05  request-http-accept         PIC X(1024).
-           05  request-http-accept-charset PIC X(1024).
-           05  request-http-accept-encoding PIC X(1024).
-           05  request-http-accept-language PIC X(1024).
-           05  request-cache-control        PIC X(1024).
-           05  request-connection           PIC X(1024).
-           05  request-http-cookie          PIC X(8192).
-           05  request-http-form            PIC X(8192).
-           05  request-http-host            PIC X(100).
-           05  request-http-referrer        PIC X(1024).
-           05  request-http-ua-color        PIC X(50).
-           05  request-ua-cpu               PIC X(50).
-           05  request-ua-os                PIC X(50).
-           05  request-ua-pixels            PIC x(50).
-           05  request-user-agent           PIC X(1024).
-           05  request-x-forwarded-for      PIC X(1024).
-           05  request-instance-id          PIC X(1024).
-           05  request-last-modified        PIC X(50).
-           05  request-page-count           PIC X(10).
-           05  request-path                 PIC X(4096).
-           05  request-path-info            PIC X(1024).
-           05  request-query-string         PIC X(1024).
-           05  request-query-string-unescaped PIC X(1024).
-           05  request-remote-addr          PIC X(1024).
-           05  request-remote-host          PIC X(1024).
-           05  request-remote-ident         PIC X(1024).
-           05  request-remote-port          PIC X(100).
-           05  request-script-filename      PIC X(1024).
-           05  request-script-name          PIC X(1024).
-           05  request-script-uri           PIC X(1024).
-           05  request-script-url           PIC X(1024).
-           05  request-server-admin         PIC X(1024).
-           05  request-server-name          PIC X(1024).
-           05  request-server-port          PIC X(100).
-           05  request-server-protocol      PIC X(100).
-           05  request-server-signature     PIC X(1024).
-           05  request-server-software      PIC X(1024).
-           05  request-total-hits           PIC X(100).
-           05  request-tz                   PIC X(100).
-           05  request-unique-id            PIC X(100).
-           05  request-user-name            PIC X(100).
-           05  request-visp-remote-addr     PIC X(1024).
-           05  request-visp-user            PIC X(1024).
-           05  request-headers OCCURS 10 TIMES.
-               10  request-header-key      PIC X(80) VALUE SPACES.
-               10  request-header-value    PIC X(1024) VALUE SPACES.
-           05  request-headers-count       PIC S9(04).
-           05  request-parameters OCCURS 10 TIMES.
-               10  request-parameter-key   PIC X(80) VALUE SPACES.
-               10  request-parameter-value PIC X(1024) VALUE SPACES.
-           05  request-parameters-count    PIC S9(04).
+       COPY 'http-request.cpy'.
 
        01  request-uri-split.
            05  request-uri-pieces OCCURS 10 TIMES.
@@ -180,4 +117,200 @@
            DISPLAY 'matched = ' matched
 
            GOBACK.
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. build-request.
+
+       DATA DIVISION.
+
+       WORKING-STORAGE SECTION.
+
+       COPY 'http-request.cpy'.
+
+       PROCEDURE DIVISION.
+
+           accept request-auth-type
+                  from environment "auth_type"
+           end-accept
+           accept request-content-length
+                  from environment "content_length"
+           end-accept
+           accept request-content-type
+                  from environment "content_type"
+           end-accept
+           accept request-date-local
+                  from environment "date_local"
+           end-accept
+           accept request-date-gmt
+                  from environment "date_gmt"
+           end-accept
+           accept request-document-name
+                  from environment "document_name"
+           end-accept
+           accept request-document-root
+                  from environment "document_root"
+           end-accept
+           accept request-document-uri
+                  from environment "document_uri"
+           end-accept
+           accept request-forwarded
+                  from environment "forwarded"
+           end-accept
+           accept request-from
+                  from environment "from"
+           end-accept
+           accept request-gateway-interface
+                  from environment "gateway_interface"
+           end-accept
+           accept request-http-accept
+                  from environment "http_accept"
+           end-accept
+           accept request-http-accept-charset
+                  from environment "http_accept_charset"
+           end-accept
+           accept request-http-accept-encoding
+                  from environment "http_accept_encoding"
+           end-accept
+           accept request-http-accept-language
+                  from environment "http_accept_language"
+           end-accept
+           accept request-http-cache-control
+                  from environment "http_cache_control"
+           end-accept
+           accept request-http-connection
+                  from environment "http_connection"
+           end-accept
+           accept request-http-cookie
+                  from environment "http_cookie"
+           end-accept
+           accept request-http-form
+                  from environment "http_form"
+           end-accept
+           accept request-http-host
+                  from environment "http_host"
+           end-accept
+           accept request-http-referrer
+                  from environment "http_referrer"
+           end-accept
+           accept request-http-ua-color
+                  from environment "http_ua_color"
+           end-accept
+           accept request-http-ua-cpu
+                  from environment "http_ua_cpu"
+           end-accept
+           accept request-http-ua-os
+                  from environment "http_ua_os"
+           end-accept
+           accept request-http-ua-pixels
+                  from environment "http_ua_pixels"
+           end-accept
+           accept request-http-user-agent
+                  from environment "http_user_agent"
+           end-accept
+           accept request-http-x-forwarded-for
+                  from environment "http_x_forwarded_for"
+           end-accept
+           accept request-instance-id
+                  from environment "instance_id"
+           end-accept
+           accept request-last-modified
+                  from environment "last_modified"
+           end-accept
+           accept request-page-count
+                  from environment "page_count"
+           end-accept
+           accept request-path
+                  from environment "path"
+           end-accept
+           accept request-path-info
+                  from environment "path_info"
+           end-accept
+           accept request-path-translated
+                  from environment "path_translated"
+           end-accept
+           accept request-query-string
+                  from environment "query_string"
+           end-accept
+           accept request-query-string-unescaped
+                  from environment "query_string_unescaped"
+           end-accept
+           accept request-remote-addr
+                  from environment "remote_addr"
+           end-accept
+           accept request-remote-host
+                  from environment "remote_host"
+           end-accept
+           accept request-remote-ident
+                  from environment "remote_ident"
+           end-accept
+           accept request-remote-port
+                  from environment "remote_port"
+           end-accept
+           accept request-remote-user
+                  from environment "remote_user"
+           end-accept
+           accept request-method
+                  from environment "request_method"
+           end-accept
+           accept request-uri
+                  from environment "request_uri"
+           end-accept
+           accept request-script-filename
+                  from environment "script_filename"
+           end-accept
+           accept request-script-name
+                  from environment "script_name"
+           end-accept
+           accept request-script-uri
+                  from environment "script_uri"
+           end-accept
+           accept request-script-url
+                  from environment "script_url"
+           end-accept
+           accept request-server-admin
+                  from environment "server_admin"
+           end-accept
+           accept request-server-addr
+                  from environment "server_addr"
+           end-accept
+           accept request-server-name
+                  from environment "server_name"
+           end-accept
+           accept request-server-port
+                  from environment "server_port"
+           end-accept
+           accept request-server-protocol
+                  from environment "server_protocol"
+           end-accept
+           accept request-server-signature
+                  from environment "server_signature"
+           end-accept
+           accept request-server-software
+                  from environment "server_software"
+           end-accept
+           accept request-total-hits
+                  from environment "total_hits"
+           end-accept
+           accept request-tz
+                  from environment "tz"
+           end-accept
+           accept request-unique-id
+                  from environment "unique_id"
+           end-accept
+           accept request-user-name
+                  from environment "user_name"
+           end-accept
+           accept request-visp-domain
+                  from environment "visp_domain"
+           end-accept
+           accept request-visp-remote-addr
+                  from environment "visp_remote_addr"
+           end-accept
+           accept request-visp-user
+                  from environment "visp_user"
+           end-accept
+
+           GOBACK.
+       END PROGRAM build-request.
+
        END PROGRAM router.
