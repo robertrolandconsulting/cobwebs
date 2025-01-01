@@ -11,7 +11,7 @@
        DATA DIVISION.
 
        WORKING-STORAGE SECTION.
-       COPY 'db-connect-vars.cbl'.
+       COPY 'db-connect-vars.cpy'.
 
        01  D-USER-REC.
            05  D-USER-ID           PIC X(36).
@@ -49,7 +49,7 @@
        MAIN-RTN.
            DISPLAY "ADDUSER STARTED".
 
-           COPY 'db-connect-proc.cbl'.
+           COPY 'db-connect-proc.cpy'.
 
            EXEC SQL
                CONNECT TO :BUFFER

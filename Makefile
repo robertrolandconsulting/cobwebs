@@ -1,4 +1,4 @@
-COBC_FLAGS=-Wall
+COBC_FLAGS=-Wall -Icopybooks/
 
 COBSHA3_FILES=$(wildcard lib/cobsha3/*.cob)
 

@@ -12,7 +12,7 @@
        DATA DIVISION.
 
        WORKING-STORAGE SECTION.
-       COPY 'db-connect-vars.cbl'.
+       COPY 'db-connect-vars.cpy'.
 
        01  D-BOOK-REC.
            05  D-BOOK-ID           PIC X(36).
@@ -50,7 +50,7 @@
        MAIN-RTN.
            DISPLAY "LISTBOOKS STARTED".
 
-           COPY 'db-connect-proc.cbl'.
+           COPY 'db-connect-proc.cpy'.
 
            EXEC SQL
                CONNECT TO :BUFFER
@@ -91,7 +91,7 @@
                DISPLAY D-BOOK-REC
                EXEC SQL
                    FETCH C1 INTO :BOOK-ID, :BOOK-NAME, :BOOK-AUTHOR,
-                                 :BOOK-YEAR, :BOOK-ISBN10, 
+                                 :BOOK-YEAR, :BOOK-ISBN10,
                                  :BOOK-SYNOPSIS
                END-EXEC
            END-PERFORM.
