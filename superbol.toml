@@ -5,6 +5,6 @@ copyexts = [ "cpy", "cbl", "cob" ]
 
 [[cobol.copybooks]]
 file-relative = false
-dir = "."
+dir = "./copybooks"
 
 [cobol.indent]
