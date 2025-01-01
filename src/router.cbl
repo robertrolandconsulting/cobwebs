@@ -73,7 +73,7 @@ match-route.
 *>    ANY :variable name gets stored as a VALUE IN the
 *>      request parameters
 
-    display 'Route scan for ' request-uri
+    >>D display 'Route scan for ' request-uri
 
     call 'string-split'
          using '/' request-uri request-uri-split
@@ -84,17 +84,17 @@ match-route.
             until route-idx > num-routes
 
        if request-method = route-method(route-idx)
-          display "Matched method at " route-idx
+          >>D display "Matched method at " route-idx
 
           call 'string-split'
                using '/' route-path(route-idx) route-uri-split
 
           if request-uri-count = route-uri-count
-             display "possible match on count"
+             >>D display "possible match on count"
 
              move 1 to piece-idx
 
-             display 'uri-count ' route-uri-count
+             >>D display 'uri-count ' route-uri-count
 
              perform varying piece-idx
                      from 1 by 1
@@ -103,7 +103,9 @@ match-route.
                 evaluate true
                 when route-uri-pieces(piece-idx)(1:1) = ':'
                    *> parse variable
-                   display 'var = ' route-uri-pieces(piece-idx)
+                   call 'add-request-parameter'
+                   using http-request route-uri-pieces(piece-idx)
+                         request-uri-pieces(piece-idx)
                 when request-uri-pieces(route-idx) not =
                 route-uri-pieces(route-idx)
                    move 'n' to matched
@@ -114,9 +116,34 @@ match-route.
           end-if
     end-perform
 
-    display 'matched = ' matched
+    >>D display 'matched = ' matched
+
+    display request-parameter-key(1) '=' request-parameter-value(1)
 
     goback.
+
+identification division.
+program-id. add-request-parameter.
+
+data division.
+
+linkage section.
+
+copy 'http-request.cpy'.
+
+    01 param-name  PIC X(1024).
+    01 param-value PIC X(1024).
+
+procedure division using http-request param-name param-value.
+
+    add 1 to request-parameters-count.
+
+    move param-name to request-parameter-key(request-parameters-count).
+    move param-value to request-parameter-value(request-parameters-count).
+
+    goback.
+
+end program add-request-parameter.
 
 identification division.
 program-id. build-request.

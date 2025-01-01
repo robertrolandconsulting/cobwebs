@@ -1,4 +1,4 @@
-COBC_FLAGS=-Wall -I../copybooks/
+COBC_FLAGS=-Wall -I../copybooks/ --debug
 
 all: ../out/listbooks ../out/adduser ../out/router
 
