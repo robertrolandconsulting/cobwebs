@@ -1,57 +1,56 @@
-      ********************************************
-      * Various helper routines
-      *
-      * utils
-      *
-      * Copyright (c) 2024 Robert Roland
-      ********************************************
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID. string-split.
+       >>SOURCE FORMAT IS FREE
+*>*******************************************
+*> Various helper routines
+*>
+*> utils
+*>
+*> Copyright (c) 2024 Robert Roland
+*>*******************************************
+identification division.
+program-id. string-split.
 
-       DATA DIVISION.
+data division.
 
-       LOCAL-STORAGE SECTION.
+local-storage section.
 
-       01  split-string.
-           05  split-string-pieces OCCURS 10 TIMES.
-               10  split-string-piece PIC X(80) VALUE SPACES.
-           05  split-string-count PIC S9(04) VALUE 0.
+01  split-string.
+    05  split-string-pieces occurs 10 times.
+        10  split-string-piece pic x(80) value spaces.
+    05  split-string-count pic s9(04) value 0.
 
-       77  counter PIC S9(04) COMP.
-       77  ptr     PIC S9(04) VALUE 1.
+77  counter pic s9(04) comp.
+77  ptr     pic s9(04) value 1.
 
-       LINKAGE SECTION.
+linkage section.
 
-       01  split-delimiter PIC X(1) VALUE SPACES.
+01  split-delimiter pic x(1) value spaces.
 
-       01  string-values.
-           05  string-value PIC X(1024) VALUE SPACES.
+01  string-values.
+    05  string-value pic x(1024) value spaces.
 
-       01  split-string-out.
-           05  split-string-pieces-out OCCURS 10 TIMES.
-               10  split-string-piece-out PIC X(80) VALUE SPACES.
-           05  split-string-count-out PIC S9(04) VALUE 0.
+01  split-string-out.
+    05  split-string-pieces-out occurs 10 times.
+        10  split-string-piece-out pic x(80) value spaces.
+    05  split-string-count-out pic s9(04) value 0.
 
-       PROCEDURE DIVISION
-          USING split-delimiter string-values split-string-out.
+procedure division
+   using split-delimiter string-values split-string-out.
 
-           MOVE 1 TO counter.
-           MOVE 1 TO ptr.
+    move 1 to counter.
+    move 1 to ptr.
 
-           MOVE 0 TO split-string-count.
+    move 0 to split-string-count.
 
-           PERFORM VARYING counter FROM 1 BY 1 UNTIL counter > 10
-              UNSTRING string-value DELIMITED BY ALL split-delimiter
-                       INTO split-string-pieces(counter)
-                       WITH POINTER ptr
-                       TALLYING IN split-string-count
-              END-UNSTRING
-           END-PERFORM.
+    perform varying counter from 1 by 1 until counter > 10
+       unstring string-value delimited by all split-delimiter
+                into split-string-pieces(counter)
+                with pointer ptr
+                tallying in split-string-count
+       end-unstring
+    end-perform.
 
-           MOVE split-string TO split-string-out.
+    move split-string to split-string-out.
 
-           DISPLAY 'Done = ' split-string-count.
-           DISPLAY 'Out  = ' split-string-count-out.
-           GOBACK.
+    goback.
 
-       END PROGRAM string-split.
+end program string-split.
