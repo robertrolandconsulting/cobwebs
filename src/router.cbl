@@ -39,6 +39,8 @@ copy 'http-request.cpy'.
 01  matched      pic x(1).
 01  piece-idx    pic s9(04).
 
+01  temp-str     pic x(1024) value spaces.
+
 linkage section.
 
 procedure division.
@@ -103,9 +105,13 @@ match-route.
                 evaluate true
                 when route-uri-pieces(piece-idx)(1:1) = ':'
                    *> parse variable
+                   move route-uri-pieces(piece-idx) to temp-str
+                   move temp-str(2:function length(temp-str) - 1) to temp-str
+
                    call 'add-request-parameter'
-                   using http-request route-uri-pieces(piece-idx)
-                         request-uri-pieces(piece-idx)
+                   using http-request
+                         function trim(temp-str, trailing)
+                         function trim(request-uri-pieces(piece-idx), trailing)
                 when request-uri-pieces(route-idx) not =
                 route-uri-pieces(route-idx)
                    move 'n' to matched
