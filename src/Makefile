@@ -1,6 +1,6 @@
 COBC_FLAGS=-Wall -I../copybooks/ -fdebugging-line
 
-all: ../out/listbooks ../out/adduser ../out/router
+all: ../out/listbooks ../out/adduser ../out/cobwebs
 
 init:
 	@mkdir -p ../generated
@@ -14,8 +14,8 @@ init:
 	esqlOC -o ../generated/adduser.cob adduser.cbl
 	cobc $(COBC_FLAGS) -x ../generated/adduser.cob -o ../out/adduser -L../out/ -locsql
 
-../out/router: init router.cbl utils.cbl
-	cobc $(COBC_FLAGS) -o ../out/router -x router.cbl utils.cbl
+../out/cobwebs: init cobwebs.cbl router.cbl utils.cbl
+	cobc $(COBC_FLAGS) -o ../out/cobwebs -x cobwebs.cbl router.cbl utils.cbl -A '--include fcgi_stdio.h' -lfcgi
 
 clean:
 	rm -rf ../generated/ ../out/
