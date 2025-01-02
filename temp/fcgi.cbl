@@ -38,19 +38,23 @@ working-storage section.
 
 linkage section.
 
-COPY 'fcgi.cpy'.
+01  fcgx-request-ptr usage pointer.
+01  sock             usage binary-short.
+01  flags            usage binary-short.
 
-01  sock        usage binary-short.
-01  flags       usage binary-short.
+procedure division using
+    by value fcgx-request-ptr
+    by value sock
+    by value flags.
 
-procedure division using fcgx-request sock flags.
+    call "FCGX_InitRequest" using
+    by value fcgx-request-ptr
+    by value sock
+    by value flags.
 
-call "FCGX_InitRequest" using
-by value fcgx-request
-by value sock
-by value flags.
+    call 'CBL_OC_DUMP' using fcgx-request-ptr.
 
-goback.
+    goback.
 
 end program fcgi-initrequest.
 
