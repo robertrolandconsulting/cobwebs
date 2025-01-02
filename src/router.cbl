@@ -105,8 +105,8 @@ match-route.
                 evaluate true
                 when route-uri-pieces(piece-idx)(1:1) = ':'
                    *> parse variable
-                   move route-uri-pieces(piece-idx) to temp-str
-                   move temp-str(2:function length(temp-str) - 1) to temp-str
+                   move route-uri-pieces(piece-idx)(2:function length(route-uri-pieces(piece-idx)) - 1)
+                   to temp-str
 
                    call 'add-request-parameter'
                    using http-request

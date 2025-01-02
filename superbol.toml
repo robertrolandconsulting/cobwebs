@@ -1,6 +1,6 @@
 [cobol]
 dialect = "gnucobol"
-source-format = "auto"
+source-format = "free"
 copyexts = [ "cpy", "cbl", "cob" ]
 
 [[cobol.copybooks]]
