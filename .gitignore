@@ -4,3 +4,4 @@ generated/
 env.local
 *~
 _superbol/
+*.kate-swp

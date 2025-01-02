@@ -129,6 +129,8 @@ match-route.
 
     goback.
 
+end program router.
+
 identification division.
 program-id. add-request-parameter.
 
@@ -346,5 +348,3 @@ procedure division.
 
     goback.
 end program build-request.
-
-end program router.

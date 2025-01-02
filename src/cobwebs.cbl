@@ -41,6 +41,9 @@ procedure division.
     end-call
 
     perform until fastcgi-accept is less than zero
+        *> build http request
+        call "build-request"
+
         *> Always send out the Content-type before any other IO
         display "Content-type: text/html" newline end-display
 
@@ -48,6 +51,7 @@ procedure division.
         display
             "<h3>FastCGI environment with GNU Cobol</h3>"
         end-display
+        display "</html></body>" end-display
 
         call "FCGI_Accept" returning fastcgi-accept
             on exception
