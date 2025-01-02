@@ -6,16 +6,13 @@ identification division.
 program-id.   simple.
 
 ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-CONTROL.
-    SELECT OPTIONAL OUT-FILE ASSIGN "log.txt"
-    ORGANIZATION LINE SEQUENTIAL.
+
 DATA DIVISION.
 FILE SECTION.
-FD OUT-FILE.
-   01 log-message pic x(1024).
 
 working-storage section.
+
+COPY 'fcgi.cpy'.
 
 01 fastcgi-accept  usage binary-long.
 
@@ -24,38 +21,41 @@ working-storage section.
 
 procedure division.
 
- OPEN OUTPUT out-file.
- move 'start' to log-message.
- write log-message.
+    call "fcgi-initrequest"
+    using fcgx-request 0 0.
+
+    display 'out = ' stream-out.
+
+ display "Starting" upon stderr end-display
 
  call "FCGI_Accept" returning fastcgi-accept
      on exception
          display
              "FCGI_Accept call error, link with -lfcgi"
+             upon stderr
          end-display
  end-call
 
- move fastcgi-accept to log-message.
- write log-message.
+ display 'fcgi_accept = ' fastcgi-accept upon stderr end-display
 
  perform until fastcgi-accept is less than zero
-     move 'processing request' to log-message
-     write log-message
+     display "processing request" upon stderr end-display
 
 *> Always send out the Content-type before any other IO
-     display "Content-type: text/html" carriage-return newline
+     display "Content-type: text/html" carriage-return newline upon stdout
      end-display
 
-     display "<html><body>" end-display
+     display "<html><body>"  upon stdout end-display
      display
          "<h3>FastCGI environment with GnuCOBOL</h3>"
+          upon stdout
      end-display
 
      call "FCGI_Accept" returning fastcgi-accept
          on exception
              move -1 to fastcgi-accept
      end-call
-     move fastcgi-accept to log-message
-     write log-message
+
+     display 'fcgi_accept = ' fastcgi-accept upon stderr end-display
 
  end-perform.
