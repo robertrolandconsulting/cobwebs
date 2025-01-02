@@ -32,6 +32,7 @@ copy 'http-request.cpy'.
 01 newline         pic x value x'0a'.
 
 procedure division.
+    display "foo".
 
     call "FCGI_Accept" returning fastcgi-accept
         on exception
