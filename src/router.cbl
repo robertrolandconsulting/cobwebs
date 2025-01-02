@@ -120,6 +120,7 @@ match-route.
                 end-evaluate
              end-perform
           end-if
+       end-if
     end-perform
 
     >>D display 'matched = ' matched
