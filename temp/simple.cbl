@@ -14,7 +14,7 @@ working-storage section.
 
 COPY 'fcgi.cpy'.
 
-01 fastcgi-accept  usage binary-long.
+01 fastcgi-accept  usage binary-short.
 
 01 carriage-return pic x value x'0c'.
 01 newline         pic x value x'0a'.
@@ -23,15 +23,17 @@ COPY 'fcgi.cpy'.
 
 procedure division.
 
+    call 'fcgi-init'.
+
     set fcgx-request-ptr to address of fcgx-request.
-    display 'fcgx-request-ptr = ' fcgx-request-ptr.
+    display 'fcgx-request-ptr = ' fcgx-request-ptr upon stderr.
 
     call "fcgi-initrequest"
     using by value fcgx-request-ptr 0 0.
 
     display "Starting" upon stderr end-display
 
-    call "FCGI_Accept" returning fastcgi-accept
+    call "fcgi-accept-r" using fcgx-request-ptr fastcgi-accept
         on exception
             display
                 "FCGI_Accept call error, link with -lfcgi"
@@ -41,24 +43,25 @@ procedure division.
 
     display 'fcgi_accept = ' fastcgi-accept upon stderr end-display
 
+    display 'fcgx-request-out = ' stream-out upon stderr.
+
     perform until fastcgi-accept is less than zero
         display "processing request" upon stderr end-display
 
     *> Always send out the Content-type before any other IO
-        display "Content-type: text/html" carriage-return newline upon stdout
-        end-display
+        call "fcgi-display"
+        using stream-out function concatenate("Content-type: text/html",  carriage-return, newline)
 
-        display "<html><body>"  upon stdout end-display
-        display
-            "<h3>FastCGI environment with GnuCOBOL</h3>"
-            upon stdout
-        end-display
+        call "fcgi-display"
+        using stream-out "<html><body>"
 
-        call "FCGI_Accept" returning fastcgi-accept
-            on exception
-                move -1 to fastcgi-accept
-        end-call
+        call "fcgi-display"
+        using stream-out "<h3>FastCGI environment with GnuCOBOL</h3>"
+
+*>         call "fcgi-accept-r" using fcgx-request-ptr fastcgi-accept
+*>         on exception
+            move -1 to fastcgi-accept
+*>         end-call
 
         display 'fcgi_accept = ' fastcgi-accept upon stderr end-display
-
     end-perform.
