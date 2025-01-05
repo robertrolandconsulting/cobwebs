@@ -30,41 +30,35 @@ procedure division.
 end program fcgi-is-cgi.
 
 identification division.
-program-id. fcgi-display.
+program-id. fcgi-putstr.
 
 environment division.
 
 data division.
 
-working-storage section.
+local-storage section.
 
-01  rc          usage binary-short.
+01  rc usage binary-long value 0.
 
 linkage section.
 
-01  out-ptr     usage pointer.
-01  out-str     pic x any length.
+01  out-str     pic x(1024).
+01  rc-out      usage binary-long.
 
 procedure division using
-    by value out-ptr
-    by value out-str.
+    by reference out-str
+    by value rc-out.
 
-    display 'call FCGX_FPrintF with out stream ptr = ' out-ptr
-    upon stderr.
-
-    call "FCGX_FPrintF" using
-    by value out-ptr
-    by content function concatenate('Content-type: text/plain', x'00')
+    call "FCGI_puts" using
+    by content out-str
     returning rc
-    on exception
-        display "fprintf exception" upon syserr
     end-call.
 
-    display 'rc = ' rc upon stderr.
+    move rc to rc-out.
 
     goback.
 
-end program fcgi-display.
+end program fcgi-putstr.
 
 identification division.
 program-id. fcgi-accept.
@@ -75,41 +69,19 @@ data division.
 
 local-storage section.
 
-01  rc usage binary-short value 0.
+01  rc usage binary-long value 0.
 
 linkage section.
 
-01  stream-in  usage pointer.
-01  stream-out usage pointer.
-01  stream-err usage pointer.
-01  envp       usage pointer.
-01  rc-out     usage binary-short.
+01  rc-out     usage binary-long.
 
 procedure division using
-    by value stream-in
-    by value stream-out
-    by value stream-err
-    by value envp
     by value rc-out.
 
-    display 'call FCGX_Accept' upon stderr.
-    display 'fcgx-request-in = ' stream-in upon stderr.
-    display 'fcgx-request-out = ' stream-out upon stderr.
-    display 'fcgx-request-err = ' stream-err upon stderr.
-    display 'fcgx-envp = ' envp upon stderr.
-
-    call "FCGX_Accept" using
-    by value stream-in
-    by value stream-out
-    by value stream-err
-    by value envp
+    call "FCGI_Accept"
     returning rc.
 
     move rc to rc-out.
-
-    display 'rc = ' rc upon stderr.
-
-    *> call 'CBL_OC_DUMP' using fcgx-request-ptr.
 
     goback.
 
