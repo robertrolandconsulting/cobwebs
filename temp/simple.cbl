@@ -1,17 +1,14 @@
        >>SOURCE FORMAT IS FREE
-*> FastCGI from COBOL sample
-*>   fastcgi-accept is a binary-long
-*>   carriage-return is x"0d" and newline is x"0a"
 identification division.
-program-id.   simple.
+program-id. simple.
 
-ENVIRONMENT DIVISION.
+environment division.
 configuration section.
 repository.
     function all intrinsic.
 
-DATA DIVISION.
-FILE SECTION.
+data division.
+file section.
 
 working-storage section.
 
@@ -22,8 +19,6 @@ working-storage section.
 01 newline         pic x value x'0a'.
 
 procedure division.
-*>     display "Starting" upon stderr end-display
-
     call "fcgi-accept"
     using fastcgi-accept-rc
     on exception
@@ -31,13 +26,10 @@ procedure division.
             "FCGI_Accept call error, link with -lfcgi"
             upon stderr
         end-display
+        stop run
     end-call
 
-*>     display 'fcgi_accept = ' fastcgi-accept-rc upon stderr end-display
-
     perform until fastcgi-accept-rc is less than zero
-*>         display "processing request" upon stderr end-display
-
     *> Always send out the Content-type before any other IO
 
         call "fcgi-putstr"
@@ -55,6 +47,4 @@ procedure division.
         call "fcgi-accept"
         using fastcgi-accept-rc
         end-call
-
-*>         display 'fcgi_accept = ' fastcgi-accept-rc upon stderr end-display
     end-perform.
