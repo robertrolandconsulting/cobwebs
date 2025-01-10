@@ -12,18 +12,16 @@ data division.
 
 local-storage section.
 
-01  ret-val     binary-short value 0.
-
 linkage section.
 
-01  ret-val-out binary-short.
+01  ret-val-out usage binary-long.
 
-procedure division.
+procedure division
+    using by value ret-val-out.
 
-    call "FCGX_IsCGI"
-    returning ret-val.
+    call "FCGX_IsCGI".
 
-    move ret-val to ret-val-out.
+    move return-code to ret-val-out.
 
     goback.
 
@@ -36,10 +34,6 @@ environment division.
 
 data division.
 
-local-storage section.
-
-01  rc usage binary-long value 0.
-
 linkage section.
 
 01  out-str     pic x(1024).
@@ -51,10 +45,9 @@ procedure division using
 
     call "FCGI_puts" using
     by content out-str
-    returning rc
     end-call.
 
-    move rc to rc-out.
+    move return-code to rc-out.
 
     goback.
 
@@ -67,10 +60,6 @@ environment division.
 
 data division.
 
-local-storage section.
-
-01  rc usage binary-long value 0.
-
 linkage section.
 
 01  rc-out     usage binary-long.
@@ -78,12 +67,56 @@ linkage section.
 procedure division using
     by value rc-out.
 
-    call "FCGI_Accept"
-    returning rc.
+    call "FCGI_Accept".
 
-    move rc to rc-out.
+    move return-code to rc-out.
 
     goback.
 
 end program fcgi-accept.
 
+identification division.
+program-id. fcgi-accept-r.
+
+environment division.
+
+data division.
+
+linkage section.
+
+01  fcgx-request-ptr usage pointer.
+01  rc-out           usage binary-long.
+
+procedure division using
+    by value fcgx-request-ptr
+    by value rc-out.
+
+    call "FCGX_Accept_r"
+    using by value fcgx-request-ptr.
+
+    move return-code to rc-out.
+
+    goback.
+
+end program fcgi-accept-r.
+
+identification division.
+program-id. fcgi-init.
+
+environment division.
+
+data division.
+
+linkage section.
+
+01  ret-val-out usage binary-long.
+
+procedure division.
+
+    call "FCGX_Init".
+
+    move return-code to ret-val-out.
+
+    goback.
+
+end program fcgi-init.
