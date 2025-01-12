@@ -4,54 +4,41 @@
 *> so FastCGI needs us to fall back to their
 *> lower level API.
 identification division.
-program-id. fcgi-is-cgi.
+program-id. fcgi-display.
 
 environment division.
-
-data division.
-
-local-storage section.
-
-linkage section.
-
-01  ret-val-out usage binary-long.
-
-procedure division
-    using by value ret-val-out.
-
-    call "FCGX_IsCGI".
-
-    move return-code to ret-val-out.
-
-    goback.
-
-end program fcgi-is-cgi.
-
-identification division.
-program-id. fcgi-putstr.
-
-environment division.
+configuration section.
+repository.
+    function all intrinsic.
 
 data division.
 
 linkage section.
 
-01  out-str     pic x(1024).
-01  rc-out      usage binary-long.
+01  out-str     pic x(100).
+01  out-handle  usage pointer.
+01  rc          usage binary-long value 0.
 
 procedure division using
-    by reference out-str
-    by value rc-out.
+    by reference out-handle
+    by value out-str
+    by value rc.
 
-    call "FCGI_puts" using
-    by content out-str
+    display 'out-handle = ' out-handle upon stderr end-display
+
+    display out-str upon stderr end-display
+
+    call "FCGX_FPrintF"
+    using
+        by value out-handle
+        by content '%s'
+        by content concatenate(trim(out-str, trailing), x'00')
+    returning rc
     end-call.
-
-    move return-code to rc-out.
 
     goback.
 
-end program fcgi-putstr.
+end program fcgi-display.
 
 identification division.
 program-id. fcgi-accept.
@@ -62,21 +49,33 @@ data division.
 
 linkage section.
 
-01  rc-out     usage binary-long.
+01  in-handle   usage pointer.
+01  out-handle  usage pointer.
+01  err-handle  usage pointer.
+01  fcgx-envp   usage pointer.
+01  rc          usage binary-long.
 
 procedure division using
-    by value rc-out.
+    by reference in-handle
+    by reference out-handle
+    by reference err-handle
+    by reference fcgx-envp
+    by value rc.
 
-    call "FCGI_Accept".
-
-    move return-code to rc-out.
+    call "FCGX_Accept"
+    using
+        by reference in-handle
+        by reference out-handle
+        by reference err-handle
+        by reference fcgx-envp
+    returning rc
 
     goback.
 
 end program fcgi-accept.
 
 identification division.
-program-id. fcgi-accept-r.
+program-id. fcgi-getparam.
 
 environment division.
 
@@ -84,39 +83,21 @@ data division.
 
 linkage section.
 
-01  fcgx-request-ptr usage pointer.
-01  rc-out           usage binary-long.
+01  param-name  pic x(100).
+01  fcgx-envp   usage pointer.
+01  param-ptr   usage pointer.
 
 procedure division using
-    by value fcgx-request-ptr
-    by value rc-out.
+    by reference param-name
+    by reference fcgx-envp
+    by value param-ptr.
 
-    call "FCGX_Accept_r"
-    using by value fcgx-request-ptr.
-
-    move return-code to rc-out.
-
-    goback.
-
-end program fcgi-accept-r.
-
-identification division.
-program-id. fcgi-init.
-
-environment division.
-
-data division.
-
-linkage section.
-
-01  ret-val-out usage binary-long.
-
-procedure division.
-
-    call "FCGX_Init".
-
-    move return-code to ret-val-out.
+    call "FCGX_GetParam"
+    using
+        by content param-name
+        by reference fcgx-envp
+    returning param-ptr
 
     goback.
 
-end program fcgi-init.
+end program fcgi-getparam.
