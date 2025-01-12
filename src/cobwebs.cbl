@@ -34,16 +34,18 @@ procedure division.
 
     display "Wait for request" upon stderr end-display
 
-    call "FCGX_Accept"
+    display '1 fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
+
+    call "fcgi-accept"
     using
         by reference fcgx-in-handle
-        by reference fcgx-out-handle
+        fcgx-out-handle
         by reference fcgx-err-handle
         by reference fcgx-envp
     returning accept-rc
     end-call
 
-    display 'fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
+    display '2 fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
 
     move accept-rc to accept-rc-cbl
 
@@ -99,7 +101,7 @@ procedure division.
 
         display "Wait for request" upon stderr end-display
 
-        call "FCGX_Accept"
+        call "fcgi-accept"
         using
             by reference fcgx-in-handle
             by reference fcgx-out-handle
