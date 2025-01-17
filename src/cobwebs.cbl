@@ -16,6 +16,7 @@ repository.
     function fcgi-put-ln
     function fcgi-put
     function fcgi-get-param
+    function fcgi-finish
     function all intrinsic.
 
 data division.
@@ -38,27 +39,19 @@ procedure division.
 
     display "Wait for request" upon stderr end-display
 
-    display '1 fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
-
     move fcgi-accept(fcgx-in-handle, 
         fcgx-out-handle,
         fcgx-err-handle,
         fcgx-envp) to accept-rc
 
-    display '2 fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
-
     move accept-rc to accept-rc-cbl
-
-    display "Request found with rc " accept-rc-cbl upon stderr end-display
 
     perform until accept-rc is less than zero
         display 'request_uri = ' fcgi-get-param('REQUEST_URI', fcgx-envp) upon stderr end-display
 
         *> build http request
-        call "build-request"
-        end-call
-
-        display "Write result" upon stderr end-display
+*>         call "build-request"
+*>         end-call
 
         move fcgi-put-ln(fcgx-out-handle, 'Content-type: text/html') to rc
 
@@ -72,7 +65,7 @@ procedure division.
 
         display "Wait for request" upon stderr end-display
 
-        move fcgi-accept(fcgx-in-handle, 
+        move fcgi-accept(fcgx-in-handle,
             fcgx-out-handle,
             fcgx-err-handle,
             fcgx-envp) to accept-rc

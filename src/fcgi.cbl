@@ -102,6 +102,27 @@ procedure division
 end function fcgi-accept.
 
 identification division.
+function-id. fcgi-finish.
+
+environment division.
+
+data division.
+
+local-storage section.
+
+linkage section.
+
+01 rc pic s9(4) value 0.
+
+procedure division returning rc.
+
+    call "FCGX_Finish".
+
+    goback.
+
+end function fcgi-finish.
+
+identification division.
 function-id. fcgi-get-param.
 
 environment division.
@@ -111,16 +132,20 @@ repository.
 
 data division.
 
+local-storage section.
+
+01  param-ptr   usage pointer.
+
 linkage section.
 
 01  param-name  pic x any length.
 01  fcgx-envp   usage pointer.
-01  param-ptr   usage pointer.
+01  param-value pic x(100).
 
 procedure division using
     by reference param-name
     by reference fcgx-envp
-    returning param-ptr.
+    returning param-value.
 
     call "FCGX_GetParam"
     using
@@ -128,6 +153,16 @@ procedure division using
         by value fcgx-envp
     returning param-ptr
 
-    goback.
+    if param-ptr not equal null
+        display 'param-ptr = ' param-ptr upon stderr end-display
+        set address of param-value to param-ptr
 
+        inspect param-value
+        replacing first x'00' by space
+        characters by space after initial x'00'
+    else
+        move spaces to param-value
+    end-if
+
+    goback.
 end function fcgi-get-param.
