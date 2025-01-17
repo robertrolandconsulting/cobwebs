@@ -15,6 +15,7 @@ repository.
     function fcgi-accept
     function fcgi-put-ln
     function fcgi-put
+    function fcgi-get-param
     function all intrinsic.
 
 data division.
@@ -51,8 +52,9 @@ procedure division.
     display "Request found with rc " accept-rc-cbl upon stderr end-display
 
     perform until accept-rc is less than zero
+        display 'request_uri = ' fcgi-get-param('REQUEST_URI', fcgx-envp) upon stderr end-display
+
         *> build http request
-        display "build http-request" upon stderr end-display
         call "build-request"
         end-call
 

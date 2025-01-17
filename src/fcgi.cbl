@@ -102,29 +102,32 @@ procedure division
 end function fcgi-accept.
 
 identification division.
-program-id. fcgi-getparam.
+function-id. fcgi-get-param.
 
 environment division.
+configuration section.
+repository.
+    function all intrinsic.
 
 data division.
 
 linkage section.
 
-01  param-name  pic x(100).
+01  param-name  pic x any length.
 01  fcgx-envp   usage pointer.
 01  param-ptr   usage pointer.
 
 procedure division using
     by reference param-name
     by reference fcgx-envp
-    by value param-ptr.
+    returning param-ptr.
 
     call "FCGX_GetParam"
     using
-        by content param-name
-        by reference fcgx-envp
+        by content concatenate(trim(param-name, trailing), x'00')
+        by value fcgx-envp
     returning param-ptr
 
     goback.
 
-end program fcgi-getparam.
+end function fcgi-get-param.
