@@ -12,6 +12,9 @@ program-id.   cobwebs-serve.
 environment division.
 configuration section.
 repository.
+    function fcgi-accept
+    function fcgi-put-ln
+    function fcgi-put
     function all intrinsic.
 
 data division.
@@ -36,14 +39,10 @@ procedure division.
 
     display '1 fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
 
-    call "fcgi-accept"
-    using
-        by reference fcgx-in-handle
-        fcgx-out-handle
-        by reference fcgx-err-handle
-        by reference fcgx-envp
-    returning accept-rc
-    end-call
+    move fcgi-accept(fcgx-in-handle, 
+        fcgx-out-handle,
+        fcgx-err-handle,
+        fcgx-envp) to accept-rc
 
     display '2 fcgx-out-handle = ' fcgx-out-handle upon stderr end-display
 
@@ -59,58 +58,22 @@ procedure division.
 
         display "Write result" upon stderr end-display
 
-        move concatenate('Content-type: text/html', crlf) to out-str
-        call "fcgi-display"
-        using
-            fcgx-out-handle
-            out-str
-        returning rc
-        end-call
+        move fcgi-put-ln(fcgx-out-handle, 'Content-type: text/html') to rc
 
-        move crlf to out-str
-        call "fcgi-display"
-        using
-            fcgx-out-handle
-            out-str
-        returning rc
-        end-call
+        move fcgi-put-ln(fcgx-out-handle, ' ') to rc
 
-        move concatenate('<html><body>', crlf) to out-str
-        call "fcgi-display"
-        using
-            fcgx-out-handle
-            out-str
-        returning rc
-        end-call
+        move fcgi-put-ln(fcgx-out-handle, '<html><body>') to rc
 
-        move concatenate('<h3>FastCGI environment with GNU Cobol</h3>', crlf) to out-str
-        call "fcgi-display"
-        using
-            fcgx-out-handle
-            out-str
-        returning rc
-        end-call
+        move fcgi-put-ln(fcgx-out-handle, '<h3>FastCGI environment with GNU Cobol</h3>') to rc
 
-        move concatenate('</body></html>', crlf) to out-str
-        call "fcgi-display"
-        using
-            fcgx-out-handle
-            out-str
-        returning rc
-        end-call
+        move fcgi-put-ln(fcgx-out-handle, '</body></html>') to rc
 
         display "Wait for request" upon stderr end-display
 
-        call "fcgi-accept"
-        using
-            by reference fcgx-in-handle
-            by reference fcgx-out-handle
-            by reference fcgx-err-handle
-            by reference fcgx-envp
-        returning accept-rc
-        on exception
-            move -1 to accept-rc
-        end-call
+        move fcgi-accept(fcgx-in-handle, 
+            fcgx-out-handle,
+            fcgx-err-handle,
+            fcgx-envp) to accept-rc
     end-perform.
 
 end program cobwebs-serve.

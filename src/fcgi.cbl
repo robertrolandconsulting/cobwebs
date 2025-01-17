@@ -4,7 +4,7 @@
 *> so FastCGI needs us to fall back to their
 *> lower level API.
 identification division.
-program-id. fcgi-display.
+function-id. fcgi-put.
 
 environment division.
 configuration section.
@@ -15,33 +15,62 @@ data division.
 
 linkage section.
 
-01  out-str     pic x(100).
+01  out-str     pic x any length.
 01  out-handle  usage pointer.
 01  rc          usage binary-long value 0.
 
 procedure division using
     by reference out-handle
-    by value out-str
-    by value rc.
-
-    display 'out-handle = ' out-handle upon stderr end-display
+    by reference out-str
+    returning rc.
 
     call "FCGX_FPrintF"
     using
         by value out-handle
-        by content '%s'
+        by content z'%s'
         by content concatenate(trim(out-str, trailing), x'00')
     returning rc
     end-call.
 
-    display 'back from call' upon stderr end-display
+    goback.
+
+end function fcgi-put.
+
+identification division.
+function-id. fcgi-put-ln.
+
+environment division.
+configuration section.
+repository.
+    function all intrinsic.
+
+data division.
+
+linkage section.
+
+01  out-str     pic x any length.
+01  out-handle  usage pointer.
+01  rc          usage binary-long value 0.
+
+procedure division using
+    by reference out-handle
+    by reference out-str
+    returning rc.
+
+    call "FCGX_FPrintF"
+    using
+        by value out-handle
+        by content z'%s'
+        by content concatenate(trim(out-str, trailing), x'0d', x'0a', x'00')
+    returning rc
+    end-call.
 
     goback.
 
-end program fcgi-display.
+end function fcgi-put-ln.
 
 identification division.
-program-id. fcgi-accept.
+function-id. fcgi-accept.
 
 environment division.
 
@@ -49,25 +78,16 @@ data division.
 
 local-storage section.
 
+linkage section.
+
 01  in-handle   usage pointer.
 01  out-handle  usage pointer.
 01  err-handle  usage pointer.
 01  envp        usage pointer.
-
-linkage section.
-
-01  o-in-handle   usage pointer.
-01  o-out-handle  usage pointer.
-01  o-err-handle  usage pointer.
-01  o-fcgx-envp   usage pointer.
 01  rc          usage binary-long.
 
-procedure division using
-    by value o-in-handle
-    by value o-out-handle
-    by value o-err-handle
-    by value o-fcgx-envp
-    by value rc.
+procedure division
+    using in-handle out-handle err-handle envp returning rc.
 
     call "FCGX_Accept"
     using
@@ -75,17 +95,11 @@ procedure division using
         by reference out-handle
         by reference err-handle
         by reference envp
-    returning rc
-    end-call
-
-    move in-handle to o-in-handle
-    move out-handle to o-out-handle
-    move err-handle to o-err-handle
-    move envp to o-fcgx-envp
+    returning rc.
 
     goback.
 
-end program fcgi-accept.
+end function fcgi-accept.
 
 identification division.
 program-id. fcgi-getparam.
