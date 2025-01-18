@@ -134,13 +134,15 @@ data division.
 
 local-storage section.
 
-01  param-ptr   usage pointer.
+01  param-ptr     usage pointer.
+01  local-string  pic x(1024).
+01  c-char-buffer pic x(1024) based.
 
 linkage section.
 
 01  param-name  pic x any length.
 01  fcgx-envp   usage pointer.
-01  param-value pic x(100).
+01  param-value pic x(1024).
 
 procedure division using
     by reference param-name
@@ -155,11 +157,11 @@ procedure division using
 
     if param-ptr not equal null
         display 'param-ptr = ' param-ptr upon stderr end-display
-        set address of param-value to param-ptr
-
-        inspect param-value
-        replacing first x'00' by space
-        characters by space after initial x'00'
+        set address of c-char-buffer to param-ptr
+        string c-char-buffer delimited by x"00"
+            into local-string
+        end-string
+        move local-string to param-value
     else
         move spaces to param-value
     end-if
