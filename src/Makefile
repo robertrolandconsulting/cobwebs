@@ -1,4 +1,5 @@
-COBC_FLAGS=-Wall -I../copybooks/
+# TODO: remove -Wno-prototypes below
+COBC_FLAGS=-Wall -I../copybooks/ -Wno-prototypes
 
 all: ../out/cobwebs.fcgi
 

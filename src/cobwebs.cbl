@@ -47,11 +47,12 @@ procedure division.
     move accept-rc to accept-rc-cbl
 
     perform until accept-rc is less than zero
-        display 'request_uri = ' fcgi-get-param('REQUEST_URI', fcgx-envp) upon stderr end-display
-
         *> build http request
-*>         call "build-request"
-*>         end-call
+        call "build-request"
+        using fcgx-envp http-request
+        end-call
+
+        display 'request_uri = ' trim(request-uri in http-request) upon stderr end-display
 
         move fcgi-put-ln(fcgx-out-handle, 'Content-type: text/html') to rc
 

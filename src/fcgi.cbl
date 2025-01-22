@@ -156,7 +156,6 @@ procedure division using
     returning param-ptr
 
     if param-ptr not equal null
-        display 'param-ptr = ' param-ptr upon stderr end-display
         set address of c-char-buffer to param-ptr
         string c-char-buffer delimited by x"00"
             into local-string

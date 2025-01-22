@@ -125,7 +125,7 @@ match-route.
 
     >>D display 'matched = ' matched
 
-    display request-parameter-key(1) '=' request-parameter-value(1)
+    display parameter-key(1) '=' parameter-value(1)
 
     goback.
 
@@ -145,10 +145,10 @@ copy 'http-request.cpy'.
 
 procedure division using http-request param-name param-value.
 
-    add 1 to request-parameters-count.
+    add 1 to parameters-count.
 
-    move param-name to request-parameter-key(request-parameters-count).
-    move param-value to request-parameter-value(request-parameters-count).
+    move param-name to parameter-key(parameters-count).
+    move param-value to parameter-value(parameters-count).
 
     goback.
 
@@ -157,194 +157,83 @@ end program add-request-parameter.
 identification division.
 program-id. build-request.
 
+environment division.
+configuration section.
+repository.
+    function fcgi-get-param
+    function all intrinsic.
+
 data division.
 
 working-storage section.
 
+linkage section.
+
+copy 'fcgi.cpy'.
 copy 'http-request.cpy'.
 
-procedure division.
+procedure division using fcgx-envp http-request.
 
-    accept request-auth-type
-           from environment "auth_type"
-    end-accept
-    accept request-content-length
-           from environment "content_length"
-    end-accept
-    accept request-content-type
-           from environment "content_type"
-    end-accept
-    accept request-date-local
-           from environment "date_local"
-    end-accept
-    accept request-date-gmt
-           from environment "date_gmt"
-    end-accept
-    accept request-document-name
-           from environment "document_name"
-    end-accept
-    accept request-document-root
-           from environment "document_root"
-    end-accept
-    accept request-document-uri
-           from environment "document_uri"
-    end-accept
-    accept request-forwarded
-           from environment "forwarded"
-    end-accept
-    accept request-from
-           from environment "from"
-    end-accept
-    accept request-gateway-interface
-           from environment "gateway_interface"
-    end-accept
-    accept request-http-accept
-           from environment "http_accept"
-    end-accept
-    accept request-http-accept-charset
-           from environment "http_accept_charset"
-    end-accept
-    accept request-http-accept-encoding
-           from environment "http_accept_encoding"
-    end-accept
-    accept request-http-accept-language
-           from environment "http_accept_language"
-    end-accept
-    accept request-http-cache-control
-           from environment "http_cache_control"
-    end-accept
-    accept request-http-connection
-           from environment "http_connection"
-    end-accept
-    accept request-http-cookie
-           from environment "http_cookie"
-    end-accept
-    accept request-http-form
-           from environment "http_form"
-    end-accept
-    accept request-http-host
-           from environment "http_host"
-    end-accept
-    accept request-http-referrer
-           from environment "http_referrer"
-    end-accept
-    accept request-http-ua-color
-           from environment "http_ua_color"
-    end-accept
-    accept request-http-ua-cpu
-           from environment "http_ua_cpu"
-    end-accept
-    accept request-http-ua-os
-           from environment "http_ua_os"
-    end-accept
-    accept request-http-ua-pixels
-           from environment "http_ua_pixels"
-    end-accept
-    accept request-http-user-agent
-           from environment "http_user_agent"
-    end-accept
-    accept request-http-x-forwarded-for
-           from environment "http_x_forwarded_for"
-    end-accept
-    accept request-instance-id
-           from environment "instance_id"
-    end-accept
-    accept request-last-modified
-           from environment "last_modified"
-    end-accept
-    accept request-page-count
-           from environment "page_count"
-    end-accept
-    accept request-path
-           from environment "path"
-    end-accept
-    accept request-path-info
-           from environment "path_info"
-    end-accept
-    accept request-path-translated
-           from environment "path_translated"
-    end-accept
-    accept request-query-string
-           from environment "query_string"
-    end-accept
-    accept request-query-string-unescaped
-           from environment "query_string_unescaped"
-    end-accept
-    accept request-remote-addr
-           from environment "remote_addr"
-    end-accept
-    accept request-remote-host
-           from environment "remote_host"
-    end-accept
-    accept request-remote-ident
-           from environment "remote_ident"
-    end-accept
-    accept request-remote-port
-           from environment "remote_port"
-    end-accept
-    accept request-remote-user
-           from environment "remote_user"
-    end-accept
-    accept request-method
-           from environment "request_method"
-    end-accept
-    accept request-uri
-           from environment "request_uri"
-    end-accept
-    accept request-script-filename
-           from environment "script_filename"
-    end-accept
-    accept request-script-name
-           from environment "script_name"
-    end-accept
-    accept request-script-uri
-           from environment "script_uri"
-    end-accept
-    accept request-script-url
-           from environment "script_url"
-    end-accept
-    accept request-server-admin
-           from environment "server_admin"
-    end-accept
-    accept request-server-addr
-           from environment "server_addr"
-    end-accept
-    accept request-server-name
-           from environment "server_name"
-    end-accept
-    accept request-server-port
-           from environment "server_port"
-    end-accept
-    accept request-server-protocol
-           from environment "server_protocol"
-    end-accept
-    accept request-server-signature
-           from environment "server_signature"
-    end-accept
-    accept request-server-software
-           from environment "server_software"
-    end-accept
-    accept request-total-hits
-           from environment "total_hits"
-    end-accept
-    accept request-tz
-           from environment "tz"
-    end-accept
-    accept request-unique-id
-           from environment "unique_id"
-    end-accept
-    accept request-user-name
-           from environment "user_name"
-    end-accept
-    accept request-visp-domain
-           from environment "visp_domain"
-    end-accept
-    accept request-visp-remote-addr
-           from environment "visp_remote_addr"
-    end-accept
-    accept request-visp-user
-           from environment "visp_user"
-    end-accept
+    move fcgi-get-param("AUTH_TYPE", fcgx-envp) to auth-type in http-request
+    move fcgi-get-param("CONTENT_LENGTH", fcgx-envp) to content-len in http-request
+    move fcgi-get-param("CONTENT_TYPE", fcgx-envp) to content-type in http-request
+    move fcgi-get-param("DATE_LOCAL", fcgx-envp) to date-local in http-request
+    move fcgi-get-param("DATE_GMT", fcgx-envp) to date-gmt in http-request
+    move fcgi-get-param("DOCUMENT_NAME", fcgx-envp) to document-name in http-request
+    move fcgi-get-param("DOCUMENT_ROOT", fcgx-envp) to document-root in http-request
+    move fcgi-get-param("DOCUMENT_URI", fcgx-envp) to document-uri in http-request
+    move fcgi-get-param("FORWARDED", fcgx-envp) to forwarded in http-request
+    move fcgi-get-param("FROM", fcgx-envp) to frm in http-request
+    move fcgi-get-param("GATEWAY_INTERFACE", fcgx-envp) to gateway-interface in http-request
+    move fcgi-get-param("HTTP_ACCEPT", fcgx-envp) to http-accept in http-request
+    move fcgi-get-param("HTTP_ACCEPT_CHARSET", fcgx-envp) to http-accept-charset in http-request
+    move fcgi-get-param("HTTP_ACCEPT_ENCODING", fcgx-envp) to http-accept-encoding in http-request
+    move fcgi-get-param("HTTP_ACCEPT_LANGUAGE", fcgx-envp) to http-accept-language in http-request
+    move fcgi-get-param("HTTP_CACHE_CONTROL", fcgx-envp) to http-cache-control in http-request
+    move fcgi-get-param("HTTP_CONNECTION", fcgx-envp) to http-connection in http-request
+    move fcgi-get-param("HTTP_COOKIE", fcgx-envp) to http-cookie in http-request
+    move fcgi-get-param("HTTP_FORM", fcgx-envp) to http-form in http-request
+    move fcgi-get-param("HTTP_HOST", fcgx-envp) to http-host in http-request
+    move fcgi-get-param("HTTP_REFERRER", fcgx-envp) to http-referrer in http-request
+    move fcgi-get-param("HTTP_UA_COLOR", fcgx-envp) to http-ua-color in http-request
+    move fcgi-get-param("HTTP_UA_CPU", fcgx-envp) to http-ua-cpu in http-request
+    move fcgi-get-param("HTTP_UA_OS", fcgx-envp) to http-ua-os in http-request
+    move fcgi-get-param("HTTP_UA_PIXELS", fcgx-envp) to http-ua-pixels in http-request
+    move fcgi-get-param("HTTP_USER_AGENT", fcgx-envp) to http-user-agent in http-request
+    move fcgi-get-param("HTTP_X_FORWARDED_FOR", fcgx-envp) to http-x-forwarded-for in http-request
+    move fcgi-get-param("INSTANCE_ID", fcgx-envp) to instance-id in http-request
+    move fcgi-get-param("LAST_MODIFIED", fcgx-envp) to last-modified in http-request
+    move fcgi-get-param("PAGE_COUNT", fcgx-envp) to page-count in http-request
+    move fcgi-get-param("PATH", fcgx-envp) to path in http-request
+    move fcgi-get-param("PATH_INFO", fcgx-envp) to path-info in http-request
+    move fcgi-get-param("PATH_TRANSLATED", fcgx-envp) to path-translated in http-request
+    move fcgi-get-param("QUERY_STRING", fcgx-envp) to query-string in http-request
+    move fcgi-get-param("QUERY_STRING_UNESCAPED", fcgx-envp) to query-string-unescaped in http-request
+    move fcgi-get-param("REMOTE_ADDR", fcgx-envp) to remote-addr in http-request
+    move fcgi-get-param("REMOTE_HOST", fcgx-envp) to remote-host in http-request
+    move fcgi-get-param("REMOTE_IDENT", fcgx-envp) to remote-ident in http-request
+    move fcgi-get-param("REMOTE_PORT", fcgx-envp) to remote-port in http-request
+    move fcgi-get-param("REMOTE_USER", fcgx-envp) to remote-user in http-request
+    move fcgi-get-param("REQUEST_METHOD", fcgx-envp) to request-method in http-request
+    move fcgi-get-param("REQUEST_URI", fcgx-envp) to request-uri in http-request
+    move fcgi-get-param("SCRIPT_FILENAME", fcgx-envp) to script-filename in http-request
+    move fcgi-get-param("SCRIPT_NAME", fcgx-envp) to script-name in http-request
+    move fcgi-get-param("SCRIPT_URI", fcgx-envp) to script-uri in http-request
+    move fcgi-get-param("SCRIPT_URL", fcgx-envp) to script-url in http-request
+    move fcgi-get-param("SERVER_ADMIN", fcgx-envp) to server-admin in http-request
+    move fcgi-get-param("SERVER_ADDR", fcgx-envp) to server-addr in http-request
+    move fcgi-get-param("SERVER_NAME", fcgx-envp) to server-name in http-request
+    move fcgi-get-param("SERVER_PORT", fcgx-envp) to server-port in http-request
+    move fcgi-get-param("SERVER_PROTOCOL", fcgx-envp) to server-protocol in http-request
+    move fcgi-get-param("SERVER_SIGNATURE", fcgx-envp) to server-signature in http-request
+    move fcgi-get-param("SERVER_SOFTWARE", fcgx-envp) to server-software in http-request
+    move fcgi-get-param("TOTAL_HITS", fcgx-envp) to total-hits in http-request
+    move fcgi-get-param("TZ", fcgx-envp) to tz in http-request
+    move fcgi-get-param("UNIQUE_ID", fcgx-envp) to unique-id in http-request
+    move fcgi-get-param("USER_NAME", fcgx-envp) to user-name in http-request
+    move fcgi-get-param("VISP_DOMAIN", fcgx-envp) to visp-domain in http-request
+    move fcgi-get-param("VISP_REMOTE_ADDR", fcgx-envp) to visp-remote-addr in http-request
+    move fcgi-get-param("VISP_USER", fcgx-envp) to visp-user in http-request
 
     goback.
 end program build-request.
