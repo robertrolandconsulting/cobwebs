@@ -7,7 +7,7 @@
 *> Copyright (c) 2025 Robert Roland
 *>*******************************************
 identification division.
-program-id.   router.
+program-id. router.
 
 data division.
 
@@ -15,16 +15,6 @@ working-storage section.
 
 01  hostvars.
     05  buffer                 pic x(1024).
-
-01  router-config.
-    05  num-routes             pic s9(04) comp.
-    05  route-table occurs 10 times indexed by route-idx.
-*> GET / POST / PUT / PATCH / DELETE / HEAD
-        10 route-method        pic x(6).
-        10 route-path          pic x(1024).
-        10 route-destination   pic x(100).
-
-copy 'http-request.cpy'.
 
 01  request-uri-split.
     05  request-uri-pieces occurs 10 times.
@@ -43,29 +33,12 @@ copy 'http-request.cpy'.
 
 linkage section.
 
-procedure division.
+copy 'routing.cpy'.
+copy 'fcgi.cpy'.
+copy 'http-request.cpy'.
 
-    display "Testing routing".
-
-    move 'PUT' to route-method(1).
-    move '/api/foo' to route-path(1).
-
-    move 'GET' to route-method(2).
-    move '/api/foo/:bar' to route-path(2).
-
-    move 2 to num-routes.
-
-    move 'GET' to request-method.
-    move '/api/foo/1234' to request-uri.
-
-    display "There are " num-routes " routes defined".
-
-    perform match-route
-
-    display "Done".
-    goback.
-
-match-route.
+procedure division using
+    by reference http-request fcgx-envp.
 
 *> General pattern here:
 *>    UNSTRING the path from the CGI request
@@ -75,10 +48,12 @@ match-route.
 *>    ANY :variable name gets stored as a VALUE IN the
 *>      request parameters
 
-    >>D display 'Route scan for ' request-uri
+    >>D display 'Route scan for ' request-uri in http-request
 
-    call 'string-split'
-         using '/' request-uri request-uri-split
+    call 'string-split' using
+         '/'
+         request-uri in http-request
+         request-uri-split
 
     move ' ' to matched
 
@@ -140,8 +115,8 @@ linkage section.
 
 copy 'http-request.cpy'.
 
-    01 param-name  PIC X(1024).
-    01 param-value PIC X(1024).
+01 param-name  PIC X(1024).
+01 param-value PIC X(1024).
 
 procedure division using http-request param-name param-value.
 
