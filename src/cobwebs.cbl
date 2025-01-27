@@ -40,33 +40,45 @@ procedure division.
     display "Wait for request" upon stderr end-display
 
     move fcgi-accept(fcgx-in-handle, 
-        fcgx-out-handle,
-        fcgx-err-handle,
-        fcgx-envp) to accept-rc
-
-    move accept-rc to accept-rc-cbl
+         fcgx-out-handle,
+         fcgx-err-handle,
+         fcgx-envp) to accept-rc
 
     perform until accept-rc is less than zero
+       if (fcgx-in-handle equal null) or
+          (fcgx-out-handle equal null) or
+          (fcgx-err-handle equal null) or
+          (fcgx-envp equal null)
+
+          display 'FATAL: FCGX_Accept returned one or more null pointers, cannot continue' upon stderr
+          display 'fcgx-in-handle  = ' fcgx-in-handle upon stderr
+          display 'fcgx-out-handle = ' fcgx-out-handle upon stderr
+          display 'fcgx-err-handle = ' fcgx-err-handle upon stderr
+          display 'fcgx-envp       = ' fcgx-envp upon stderr
+
+          stop run returning 1
+       end-if
+
         *> build http request
-        call "build-request"
-        using fcgx-envp http-request
-        end-call
+       call "build-request"
+            using fcgx-envp http-request
+       end-call
 
-        display 'request_uri = ' trim(request-uri in http-request) upon stderr end-display
+       display 'request_uri = ' trim(request-uri in http-request) upon stderr end-display
 
-        move fcgi-put-ln(fcgx-out-handle, 'Content-type: text/html') to rc
+       move fcgi-put-ln(fcgx-out-handle, 'Content-type: text/html') to rc
 
-        move fcgi-put-ln(fcgx-out-handle, ' ') to rc
+       move fcgi-put-ln(fcgx-out-handle, ' ') to rc
 
-        move fcgi-put-ln(fcgx-out-handle, '<html><body>') to rc
+       move fcgi-put-ln(fcgx-out-handle, '<html><body>') to rc
 
-        move fcgi-put-ln(fcgx-out-handle, '<h3>FastCGI environment with GNU Cobol</h3>') to rc
+       move fcgi-put-ln(fcgx-out-handle, '<h3>FastCGI environment with GNU Cobol</h3>') to rc
 
-        move fcgi-put-ln(fcgx-out-handle, '</body></html>') to rc
+       move fcgi-put-ln(fcgx-out-handle, '</body></html>') to rc
 
-        display "Wait for request" upon stderr end-display
+       display "Wait for request" upon stderr end-display
 
-        move fcgi-accept(fcgx-in-handle,
+       move fcgi-accept(fcgx-in-handle,
             fcgx-out-handle,
             fcgx-err-handle,
             fcgx-envp) to accept-rc

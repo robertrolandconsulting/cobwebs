@@ -1,0 +1,18 @@
+### format: either 'fixed', 'free', 'variable', 'xcard', 'cobolx'
+format = free
+
+### whole-file-indent: apply the given indent to the whole file
+# whole-file-indent = 0
+
+### arg-offset: offset of arguments
+# arg-offset = 3
+
+### inner-offset: offset of inner commands in blocks
+# inner-offset = 3
+
+### data-item-offset: offset of inner data items (comment for aligned)
+# data-item-offset = 
+
+### select-in-area-a: force select in area A instead of area B
+# select-in-area-a = false
+
