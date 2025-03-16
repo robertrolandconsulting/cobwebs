@@ -1,4 +1,4 @@
-       >>SOURCE FORMAT IS FREE
+       >>SOURCE FREE
 *> FastCGI wrapper for fcgiapp
 *> GnuCOBOL 3.2 doesn't use stdio.h for output,
 *> so FastCGI needs us to fall back to their
@@ -28,7 +28,7 @@ procedure division using
     using
         by value out-handle
         by content z'%s'
-        by content concatenate(trim(out-str, trailing), x'00')
+        by content concat(trim(out-str, trailing), x'00')
     returning rc
     end-call.
 
@@ -61,7 +61,7 @@ procedure division using
     using
         by value out-handle
         by content z'%s'
-        by content concatenate(trim(out-str, trailing), x'0d', x'0a', x'00')
+        by content concat(trim(out-str, trailing), x'0d', x'0a', x'00')
     returning rc
     end-call.
 
@@ -151,7 +151,7 @@ procedure division using
 
     call "FCGX_GetParam"
     using
-        by content concatenate(trim(param-name, trailing), x'00')
+        by content concat(trim(param-name, trailing), x'00')
         by value fcgx-envp
     returning param-ptr
 

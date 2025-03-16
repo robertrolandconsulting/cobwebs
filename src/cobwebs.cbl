@@ -1,4 +1,4 @@
-       >>SOURCE FORMAT IS FREE
+       >>SOURCE FREE
 *>*******************************************
 *> CobWebs framework main source file
 *>

@@ -1,4 +1,4 @@
-       >>SOURCE FORMAT IS FREE
+       >>SOURCE FREE
 *>*******************************************
 *> Route HTTP requests
 *>
@@ -48,8 +48,6 @@ procedure division using
 *>    ANY :variable name gets stored as a VALUE IN the
 *>      request parameters
 
-    >>D display 'Route scan for ' request-uri in http-request
-
     call 'string-split' using
          '/'
          request-uri in http-request
@@ -61,17 +59,11 @@ procedure division using
             until route-idx > num-routes
 
        if request-method = route-method(route-idx)
-          >>D display "Matched method at " route-idx
-
           call 'string-split'
                using '/' route-path(route-idx) route-uri-split
 
           if request-uri-count = route-uri-count
-             >>D display "possible match on count"
-
              move 1 to piece-idx
-
-             >>D display 'uri-count ' route-uri-count
 
              perform varying piece-idx
                      from 1 by 1
@@ -97,10 +89,6 @@ procedure division using
           end-if
        end-if
     end-perform
-
-    >>D display 'matched = ' matched
-
-    display parameter-key(1) '=' parameter-value(1)
 
     goback.
 
